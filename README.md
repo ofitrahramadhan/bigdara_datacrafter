@@ -1,4 +1,4 @@
-# bigdara_datacrafter
+# bigdata_datacrafter
 
 Hi guys, this is repository for our project. Here are important dates for us:
 1. 23/03           : First meeting
