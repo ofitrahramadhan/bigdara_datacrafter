@@ -1,4 +1,6 @@
-# bigdata_datacrafter
+# bigdata_datacrafter 
+# Big Data Group Work 2024
+# Crop Yield Estimation
 
 Hi guys, this is repository for our project. Here are important dates for us:
 1. 23/03           : First meeting
