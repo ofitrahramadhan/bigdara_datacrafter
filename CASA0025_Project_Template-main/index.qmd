@@ -112,7 +112,7 @@ How are you using this data to address the problem?
     - R2
     - RMSE
 
-#### **Run the model** 
+#### (optional) **Run the model** 
 
 
 
