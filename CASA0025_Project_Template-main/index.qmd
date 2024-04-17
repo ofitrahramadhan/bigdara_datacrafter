@@ -113,8 +113,7 @@ How are you using this data to address the problem?
     - RMSE
 
 #### (optional) **Run the model** 
-
-
+    (result of the crop yield rasters)
 
 ### Interface
 
