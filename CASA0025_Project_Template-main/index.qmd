@@ -13,7 +13,7 @@ jupyter:
     name: python3
 ---
 
-![CropInvest](images/Captnknure.JPG)
+![](images/Captnknure.JPG)
 
 ## Project Summary 
 
