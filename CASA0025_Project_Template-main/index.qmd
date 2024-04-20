@@ -25,7 +25,18 @@ What is the problem you’re trying to address using this application?
 
 ## **End User**
 
-Who are you building this application for? How does it address a need this community has?
+- Governments
+    - To anticipate and prepare for potential crop deficits or surpluses in a season, ensuring timely and effective responses.
+    - Developing infrastructure to store and transport crops efficiently.
+- Insurance Companies
+    - Determining insurance premiums based on potential crop yields to balance risk and cost.
+    - Managing financial exposure if low yield or drought conditions prevail, which could lead to substantial claims from farmers
+- Banks
+    - Deciding on the financial viability of providing loans to farmers based on predicted crop yields.
+    - Adjusting loan interest rates based on the predicted crop yield and associated risk to the bank’s funds.
+- Farmer Associations
+    - Using data to predict crop yields, helping farmers to secure their future by preparing for potential challenges.
+    - Identifying areas that may require enhanced irrigation efforts to improve crop yields, ensuring optimal resource allocation.
 
 ## **Data**
 
@@ -112,7 +123,7 @@ Here is a presentation to show, how our application work:
 - Here we use the Python environment to extract the data from different datasets using Google Earth Engine API
 - Afterwards, we first use the crop-specific land cover data to distinguish different crops- wheat, soybean or corn for each county in North Dakota.
 - Further, NDVI, Precipitation, SAR, Soil Moisture & other values are used to get the county-wise values from the year 2000-2024.
-- Afterwards, the Yield data is obtained from the [United States Department of Agriculture](https://quickstats.nass.usda.gov/) for each of the years and a final dataset is obtained which has all the X Variables (GEOID,NDVI,PA,SAR,SMS_AM,LST_DAY,SMS_PM,LST_NIGHT,PAR,ET) & Y variable (YIELD).
+- Afterwards, the Yield data is obtained from the [United States Department of Agriculture](https://quickstats.nass.usda.gov/) for each of the years and a final dataset is obtained which has all the X Variables (NDVI,PA,SMS_AM,LST_DAY,SMS_PM,LST_NIGHT,PAR,ET) & Y variable (YIELD).
 
 ```python
 
