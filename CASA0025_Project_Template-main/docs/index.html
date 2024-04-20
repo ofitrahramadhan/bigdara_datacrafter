@@ -146,7 +146,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="end-user" class="level2">
 <h2 class="anchored" data-anchor-id="end-user"><strong>End User</strong></h2>
-<p>Who are you building this application for? How does it address a need this community has?</p>
+<ul>
+<li>Governments
+<ul>
+<li>To anticipate and prepare for potential crop deficits or surpluses in a season, ensuring timely and effective responses.</li>
+<li>Developing infrastructure to store and transport crops efficiently.</li>
+</ul></li>
+<li>Insurance Companies
+<ul>
+<li>Determining insurance premiums based on potential crop yields to balance risk and cost.</li>
+<li>Managing financial exposure if low yield or drought conditions prevail, which could lead to substantial claims from farmers</li>
+</ul></li>
+<li>Banks
+<ul>
+<li>Deciding on the financial viability of providing loans to farmers based on predicted crop yields.</li>
+<li>Adjusting loan interest rates based on the predicted crop yield and associated risk to the bank’s funds.</li>
+</ul></li>
+<li>Farmer Associations
+<ul>
+<li>Using data to predict crop yields, helping farmers to secure their future by preparing for potential challenges.</li>
+<li>Identifying areas that may require enhanced irrigation efforts to improve crop yields, ensuring optimal resource allocation.</li>
+</ul></li>
+</ul>
 </section>
 <section id="data" class="level2">
 <h2 class="anchored" data-anchor-id="data"><strong>Data</strong></h2>
@@ -304,7 +325,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Here we use the Python environment to extract the data from different datasets using Google Earth Engine API</li>
 <li>Afterwards, we first use the crop-specific land cover data to distinguish different crops- wheat, soybean or corn for each county in North Dakota.</li>
 <li>Further, NDVI, Precipitation, SAR, Soil Moisture &amp; other values are used to get the county-wise values from the year 2000-2024.</li>
-<li>Afterwards, the Yield data is obtained from the <a href="https://quickstats.nass.usda.gov/">United States Department of Agriculture</a> for each of the years and a final dataset is obtained which has all the X Variables (GEOID,NDVI,PA,SAR,SMS_AM,LST_DAY,SMS_PM,LST_NIGHT,PAR,ET) &amp; Y variable (YIELD).</li>
+<li>Afterwards, the Yield data is obtained from the <a href="https://quickstats.nass.usda.gov/">United States Department of Agriculture</a> for each of the years and a final dataset is obtained which has all the X Variables (NDVI,PA,SMS_AM,LST_DAY,SMS_PM,LST_NIGHT,PAR,ET) &amp; Y variable (YIELD).</li>
 </ul>
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>pip install earthengine<span class="op">-</span>api</span>

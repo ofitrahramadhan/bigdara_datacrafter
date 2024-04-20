@@ -21,22 +21,21 @@ CROPINVEST - Crop Yield Estimator for the State of North Dakota, USA
 
 ## **Problem Statement**
 
-What is the problem you’re trying to address using this application? 
+North Dakota, a state in the Midwestern United States, is popular with agricultural investors for its abundant agricultural resources and vast farmland. However, the agencies like – banks, crop insurance companies, etc need a tool that can predict the crop yield value of a particular farm to ensure that they can safeguard their investment.
+In this regard, we create CROPINVEST, a GEE application that monitors the environment to predict crop yields, and based on these yields, we obtain the market value of the crop, which in turn can help end users (banks, crop insurance companies ,etc) to accurately and scientifically capture the farms potential to pay the crop loan amount or the risk associated with the insured crops and enable stakeholders to make informed decisions that optimize agricultural productivity, market strategies, and economic outcomes.
+
 
 ## **End User**
 
-- Governments
-    - To anticipate and prepare for potential crop deficits or surpluses in a season, ensuring timely and effective responses.
-    - Developing infrastructure to store and transport crops efficiently.
 - Insurance Companies
-    - Determining insurance premiums based on potential crop yields to balance risk and cost.
-    - Managing financial exposure if low yield or drought conditions prevail, which could lead to substantial claims from farmers
+    - Based on potential crop yields, charge Insurance premiums to farmers thus mitigating financial losses from decreased production. 
+    - Managing financial exposure if low yield or drought conditions prevail, which could lead to substantial claims from farmers.
 - Banks
-    - Deciding on the financial viability of providing loans to farmers based on predicted crop yields.
-    - Adjusting loan interest rates based on the predicted crop yield and associated risk to the bank’s funds.
+    - Utilize it to evaluate loan feasibility for farmers and adjust interest rates based on predicted yields and associated risks.
 - Farmer Associations
-    - Using data to predict crop yields, helping farmers to secure their future by preparing for potential challenges.
-    - Identifying areas that may require enhanced irrigation efforts to improve crop yields, ensuring optimal resource allocation.
+    - Utilize it to forecast yields, plan for adverse conditions, and identify areas needing more irrigation.
+- Governments
+    - To anticipate and prepare for potential crop deficits or surpluses at a county level and thus developing policies/infrastructure for the same.
 
 ## **Data**
 
@@ -98,7 +97,7 @@ To get the performance of our models, we can use the test data from the previous
 
 ## **Interface**
 
-Here is a presentation to show, how our application work:
+CROPINVEST supports insurance companies, banks, and farmer associations with advanced features for forecasting crop yields in North Dakota for wheat, corn, and soybeans.  Users can select different Crops and Years and utilize two key functionalities: a County feature to display crop yields, planting area, total production, and county-wide crop price totals via clickable maps; and a custom Area feature allowing users to draw specific regions to analyze crop yields, areas planted, and aggregate pricing.  This interface ensures banks and insurance companies can assess financial risks effectively, while farmers gain crucial insights into expected yields and market conditions. Here is brief overview of how our application works:
 
 <div style="position: relative; width: 100%; height: 0; padding-top: 56.2500%;
  padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden;
@@ -248,7 +247,7 @@ for year in range(2000, 2024):
 
 ### Methodology Code:
 
-- This part need to be filled
+- Considering the impact of environmental factors on crop growth within designated time constraints, our project initially explored nine parameters from the GEE database. We employed a Random Forest model to perform importance testing on these parameters for each specific crop type. Based on the results of this testing, we selected five or six key variables per crop to serve as independent variables in our predictive models. The variables in Table-1 were chosen due to their direct influence on plant growth and yield across various crops like wheat, soybeans, and corn over the period from 2015 to 2023.
 
 ### Interface Code:
 
