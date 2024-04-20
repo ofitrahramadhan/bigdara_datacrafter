@@ -103,11 +103,11 @@ Previous studies showed that RF is an effective and universal machine learning m
 
 To get the performance of our models, we can use the test data from the previous split. We used R square and Root Mean Squared Error (RMSE) to validate our models. There are some graphs showing these metrics: 
 
-![wheat](images/wheat_perform.jpg)
+![Wheat](images/wheat_perform.jpg)
 
-![corn](images/corn_perform.jpg)
+![Corn](images/corn_perform.jpg)
 
-![soybean](images/soybean_perform.jpg)
+![Soybean](images/soybean_perform.jpg)
 
 
 ### Interface
@@ -269,3 +269,4 @@ for year in range(2000, 2024):
 ### Methodology Code:
 
 ### Interface Code:
+

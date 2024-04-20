@@ -213,31 +213,36 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="methodology" class="level3">
 <h3 class="anchored" data-anchor-id="methodology">Methodology</h3>
-<p>How are you using this data to address the problem?</p>
+<p>Previous studies showed that RF is an effective and universal machine learning method for crop yield prediction on a regional and global scale with high accuracy and precision and ease of use (Jeong et al., 2016.; Prasad et al., 2021).</p>
 <section id="building-random-forest-model" class="level4">
 <h4 class="anchored" data-anchor-id="building-random-forest-model"><strong>Building Random Forest Model:</strong></h4>
 <ol type="1">
-<li><strong>Prepare original CSV including the three types of crop among several X variables and Y variable (the crop yield)</strong>
-<ul>
-<li><em>CSV Img!</em> <br><br><br>
-</li>
-</ul></li>
-<li><strong>Prepare training/validation data</strong>
-<ul>
-<li>Add a random attribute to the data set with a random number.</li>
-<li>Split 80% of data for training and 20% of that for testing.<br>
-<br><br></li>
-</ul></li>
-<li><strong>Use the training data to train three different RF Models in GEE</strong>
-<ul>
-<li>ee.Classifier.smileRandomForest(100, null, 1, 0.5, null, 0).setOutputMode(‘REGRESSION’)</li>
-<li>Notice ‘setOutputMode’ is set to ‘REGRESSION’. This command is the most important for running Random Forest regression models in GEE <br><br> #### <strong>Validation</strong></li>
-<li>X variables</li>
-<li>Importances</li>
-<li>R2</li>
-<li>RMSE</li>
-</ul></li>
+<li><p><strong>Prepare original CSV including the three types of crop among several X variables and Y variable (the crop yield)</strong></p></li>
+<li><p><strong>Prepare training/validation data</strong></p></li>
+<li><p><strong>Use the training data to train three different RF Models in GEE</strong></p></li>
 </ol>
+</section>
+<section id="validation" class="level4">
+<h4 class="anchored" data-anchor-id="validation"><strong>Validation</strong></h4>
+<p>To get the performance of our models, we can use the test data from the previous split. We used R square and Root Mean Squared Error (RMSE) to validate our models. There are some graphs showing these metrics:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/wheat_perform.jpg" class="img-fluid figure-img"></p>
+<figcaption>wheat</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/corn_perform.jpg" class="img-fluid figure-img"></p>
+<figcaption>corn</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/soybean_perform.jpg" class="img-fluid figure-img"></p>
+<figcaption>soybean</figcaption>
+</figure>
+</div>
 </section>
 </section>
 <section id="interface" class="level3">
