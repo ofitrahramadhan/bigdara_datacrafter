@@ -103,14 +103,15 @@ Previous studies showed that RF is an effective and universal machine learning m
 
 To get the performance of our models, we can use the test data from the previous split. We used R square and Root Mean Squared Error (RMSE) to validate our models. There are some graphs showing these metrics: 
 
-![](images/wheat_perform.jpg)
+<div style="position: relative; width: 100%; height: 0; padding-top: 56.2500%;
+ padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden;
+ border-radius: 8px; will-change: transform;">
+  <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
+    src="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAGC-BnkFTM&#x2F;htfGBGmKgWUiwQRlwaqXgQ&#x2F;view?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
+  </iframe>
+<ad Wani
 
-![](images/corn_perform.jpg)
-
-![](images/soybean_perform.jpg)
-
-
-### Interface
+#### **Interface**nterface
 
 Here is a presentation to show, how our application work:
 
@@ -140,6 +141,8 @@ Here is a presentation to show, how our application work:
 
 ```python
 
+pip install earthengine-api
+import ee
 def processYear(year):
     # Load the CDL dataset for the given year
     dataset = ee.ImageCollection('USDA/NASS/CDL')\
@@ -269,4 +272,3 @@ for year in range(2000, 2024):
 ### Methodology Code:
 
 ### Interface Code:
-
