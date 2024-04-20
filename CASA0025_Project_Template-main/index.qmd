@@ -17,7 +17,7 @@ jupyter:
 
 ## Project Summary 
 
-Fill in the sections below to provide a brief summary of your project. Each section should have no more than 100 words. Do not edit any of the headings.
+CROPINVEST - Crop Yield Estimator for the State of North Dakota, USA
 
 ### Problem Statement 
 
