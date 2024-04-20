@@ -226,18 +226,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="validation" class="level3">
 <h3 class="anchored" data-anchor-id="validation"><strong>Validation</strong></h3>
 <p>To get the performance of our models, we can use the test data from the previous split. We used R square and Root Mean Squared Error (RMSE) to validate our models. There are some graphs showing these metrics:</p>
+<p>:::{.column-page}</p>
 <div style="position: relative; width: 100%; height: 0; padding-top: 56.2500%;
  padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden;
  border-radius: 8px; will-change: transform;">
-<p><iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;" src="https://www.canva.com/design/DAGC-BnkFTM/htfGBGmKgWUiwQRlwaqXgQ/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen"> </iframe> &lt;ad Wi</p>
+<p><iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;" src="https://www.canva.com/design/DAGC-BnkFTM/htfGBGmKgWUiwQRlwaqXgQ/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen"> </iframe> &lt;a::: d Wi</p>
 <section id="inte" class="level4">
 <h4 class="anchored" data-anchor-id="inte">**Inte</h4>
 <p>face**nterface</p>
-Here is a presentation to show, how our appl
+Here is a presentation to show, how our app :::{.column-page} l
 <div style="position: relative; width: 100%; height: 0; padding-top: 56.2500%;
  padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden;
  border-radius: 8px; will-change: transform;">
-<p><iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;" src="https://www.canva.com/design/DAGCq_eFmq8/Muz__V20V7SJUNr3EVBSEQ/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen"> </iframe> ad Wani/iframe&gt;</p>
+<p><iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;" src="https://www.canva.com/design/DAGCq_eFmq8/Muz__V20V7SJUNr3EVBSEQ/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen"> </iframe></p>
+<p>a::: d Wani/iframe&gt;</p>
 </div>
 </section>
 </div></section>
@@ -387,7 +389,336 @@ Here is a presentation to show, how our appl
 <span id="cb1-126"><a href="#cb1-126" aria-hidden="true" tabindex="-1"></a>    processYear(year)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="methodology-code" class="level3">
-<h3 class="anchored" data-anchor-id="methodology-code">Methodology Code:</h3>
+<h3 class="anchored" data-anchor-id="methodology-code">Methodology Code</h3>
+<p>```js</p>
+<p>// ——————————————————————————define crop layers————————————————————————————————</p>
+<p>var cropLayers = { Corn: { // Add layers of corn ‘2018’: ee.Image(“projects/ee-songzimeng/assets/corn2018”), ‘2019’: ee.Image(“projects/ee-songzimeng/assets/corn2019”), ‘2020’: ee.Image(“projects/ee-songzimeng/assets/corn2020”), ‘2021’: ee.Image(“projects/ee-songzimeng/assets/corn2021”), ‘2022’: ee.Image(“projects/ee-songzimeng/assets/corn2022”), ‘2023’: ee.Image(“projects/ee-songzimeng/assets/corn2023”), ‘2024’: ee.Image(“projects/ee-songzimeng/assets/corn2024”)</p>
+<p>},</p>
+<p>Soybean: { // Add layers of soybean</p>
+<pre><code>'2018': ee.Image("projects/ee-songzimeng/assets/soybean2018"),
+'2019': ee.Image("projects/ee-songzimeng/assets/soybean2019"),
+'2020': ee.Image("projects/ee-songzimeng/assets/soybean2020"),
+'2021': ee.Image("projects/ee-songzimeng/assets/soybean2021"),
+'2022': ee.Image("projects/ee-songzimeng/assets/soybean2022"),
+'2023': ee.Image("projects/ee-songzimeng/assets/soybean2023"),
+'2024': ee.Image("projects/ee-songzimeng/assets/soybean2024")</code></pre>
+<p>},</p>
+<p>Wheat: { // Add layers of wheat</p>
+<pre><code>'2018': ee.Image("projects/ee-songzimeng/assets/wheat2018"),
+'2019': ee.Image("projects/ee-songzimeng/assets/wheat2019"),
+'2020': ee.Image("projects/ee-songzimeng/assets/wheat2020"),
+'2021': ee.Image("projects/ee-songzimeng/assets/wheat2021"),
+'2022': ee.Image("projects/ee-songzimeng/assets/wheat2022"),
+'2023': ee.Image("projects/ee-songzimeng/assets/wheat2023"),
+'2024': ee.Image("projects/ee-songzimeng/assets/wheat2024")</code></pre>
+<p>} };</p>
+<p>// ————————– Data —————————— Map.setCenter(-100.55, 47.5, 7); Map.setOptions(‘SATELLITE’);</p>
+<p>// clip the north dakota var counties = ee.FeatureCollection(‘TIGER/2016/Counties’); var nd = counties.filter(ee.Filter.eq(‘STATEFP’, ‘38’));</p>
+<p>// Formatted county name function var nd = nd.map(function(feature) { var name = ee.String(feature.get(‘NAME’)).toUpperCase().replace(’ ‘,’‘, ’g’); return feature.set(‘NAME’, name); });</p>
+<p>// Show the county boundary var ndCounties = ee.Image().byte().paint({ featureCollection: nd, color: null, width: 1 });</p>
+<p>// Add the counties layer Map.addLayer(ndCounties, {}, ‘ND Counties’);</p>
+<p>/// ——————————————Function and global variables—————————————————————————— // Function to read csv function readCsvFile(selectedYear, selectedCrop) { var fileName = selectedYear +’_‘+ selectedCrop; var csvFile = ee.FeatureCollection(’projects/ee-songzimeng/assets/’ + fileName);</p>
+<p>return csvFile; }</p>
+<p>// Function to fomat county name function processCountyColumn(table) { var countyColumnName = ‘County’; function processCountyName(countyName) { return ee.String(countyName).toUpperCase().replace(‘\s+’, ’’); }</p>
+<p>var processedCountyColumn = table.map(function(feature) { var countyName = feature.get(countyColumnName); var processedCountyName = processCountyName(countyName); return feature.set(countyColumnName, processedCountyName); });</p>
+<p>// return FeatureCollection return processedCountyColumn; }</p>
+<p>var selectedCrop=‘Select…’; var selectedYear=‘Select…’; var soybeanPrice = 11.90; // 2024 average var CornPrice = 41.68; // 2024 average var wheatPrice = 6.07; // 2024 average var cropPrice = 0; //</p>
+<p>var crops = { ‘Corn’: 1, ‘Wheat’: 23, ‘Soybean’: 5 };</p>
+<p>// ————————————————interface—————————————————————————— // set default year var defaultYear = ‘2018’;</p>
+<p>var cropYieldLayer = null;</p>
+<p>var statsLabel_1 = ui.Label(‘Click on County to see info:’); var statsLabel_2 = ui.Label(‘Select an area to see info:’);</p>
+<p>// set original info status statsLabel_1.style().set(‘shown’, true); statsLabel_2.style().set(‘shown’, false);</p>
+<p>// Clear button to remove all selected layers var drawingTools = Map.drawingTools(); var clearButton = ui.Button({ label: ‘Clear Selected Area’, onClick: function() {</p>
+<pre><code>var layers = drawingTools.layers();
+
+layers.forEach(function(layer) {
+  drawingTools.layers().remove(layer);
+});
+
+resultsPanel.clear();</code></pre>
+<p>}, style: {margin: ‘10px’} });</p>
+<p>// the main panel to select mode, year, croptype var panel = ui.Panel({ widgets: [</p>
+<pre><code>ui.Label('North Dakota Crop Yield', {
+  fontWeight: 'bold',
+  fontSize: '22px',
+  textAlign: 'center',
+  stretch: 'horizontal'
+  
+}),
+
+ui.Label('Select Mode:'),
+ui.Select({
+  items: ['Select...','County Level', 'Area Level'],
+  value: 'Select...',
+  onChange: function(mode) {
+    
+    // operate different 
+    if (mode === 'County Level') {
+      // County Level
+      statsLabel_1.style().set('shown', true);
+      statsLabel_2.style().set('shown', false);
+      
+      // reset button
+      panel.remove(clearButton);
+      panel.add(clearButton);
+      
+      // ban polygon drawing selection
+      var drawingTools = Map.drawingTools();
+      drawingTools.setShown(false);
+      
+      //Function for getting value from image
+      var getCalculation = function(countyName, cropYieldLayer) {
+        var county = nd.filter(ee.Filter.eq('NAME', countyName)).first();
+        var countyGeometry = county.geometry();
+        
+         //print(selectedYear, selectedCrop);
+        var countyData=readCsvFile(selectedYear, selectedCrop);
+        // print(countyData);
+        countyData = processCountyColumn(countyData);
+        
+        resultsPanel.clear();
+      
+        var countStats = cropYieldLayer.reduceRegion({
+          reducer: ee.Reducer.count(),
+          geometry: countyGeometry,
+          scale: 30,
+          maxPixels: 1e9
+        });
+       //print(countStats);
+      
+        var selectedCounty = countyData.filter(ee.Filter.eq('County', countyName));
+        var averYield = selectedCounty.reduceColumns({
+        reducer: ee.Reducer.mean(),
+        selectors: ['Value']
+      });
+        //print(averYield);
+      
+        // create labels
+        var countyLabel = ui.Label({
+          value: 'County: ' + countyName,
+          style: {fontSize: '13px', padding: '0px 50px'}
+        });
+      
+        var count_sumLabel = ui.Label({
+          value: 'Calculating...',
+          style: {fontSize: '13px', padding: '0px 50px'}
+        });
+      
+      // update labels by calculating
+      // get the mean yield data
+        averYield.evaluate(function(result) {
+          var meanYield = result.mean;
+          var count_averYieldLabel = ui.Label({
+            value: 'Average Yield: ' + meanYield.toFixed(2) + ' BU/Acre', 
+            style: {fontSize: '13px', padding: '0px 50px'}
+          });
+            resultsPanel.add(count_averYieldLabel);
+      });
+      
+        // calculate the area and total yield
+        countStats.get('YIELDpredicted').evaluate(function(value){
+
+          var areaInSqKm = (value / 1e6) * 900;
+          var areaInAcres = areaInSqKm * 247.105;
+          count_sumLabel.setValue('Crop Area: ' + areaInSqKm.toFixed(2) + 
+                                  ' km² (' + areaInAcres.toFixed(2) + ' Acres)');
+                                  
+          averYield.evaluate(function(result) {
+            var meanYield = result.mean;
+            var totalYield = areaInAcres * meanYield;
+            var count_totalYieldLabel = ui.Label({
+              value: 'Total Yield: ' + totalYield.toFixed(2) + ' BU', 
+              style: {fontSize: '13px', padding: '0px 50px'}
+            });
+            var yieldPrice = totalYield * cropPrice;
+            var yieldPriceLabel = ui.Label({
+              value: 'Total Yield Value: ' + yieldPrice.toFixed(2) + ' $', 
+              style: {fontSize: '13px', padding: '0px 50px'}
+            });
+            resultsPanel.add(count_totalYieldLabel);
+            resultsPanel.add(yieldPriceLabel);
+      });
+        });
+      
+        // add the new label to sub-panel
+        resultsPanel.add(countyLabel);
+        resultsPanel.add(count_sumLabel);
+      };
+      
+      Map.unlisten()
+      
+        // create onclick function
+      Map.onClick(function(coords) {
+        
+      var point = ee.Geometry.Point(coords.lon, coords.lat);
+      var county = ee.Feature(nd.filterBounds(point).first());
+      var countyName = county.get('NAME');
+      countyName.evaluate(function(name) {
+        getCalculation(name, cropYieldLayer);
+      });
+      })
+      
+
+      // Area level
+    } else if (mode === 'Area Level') {
+
+      statsLabel_1.style().set('shown', false);
+      statsLabel_2.style().set('shown', true);
+      
+      // delet onclick monitor
+      Map.unlisten()
+      
+      //reset button
+      panel.remove(clearButton);
+      panel.add(clearButton);
+      
+      // draw polygon
+      var drawingTools = Map.drawingTools();
+      drawingTools.setShown(true);
+
+
+      // function under area level
+      function initializeAreaLevelMode() {
+        // create a new drawing tools
+        var drawingTools = Map.drawingTools();
+        drawingTools.setShown(true);
+        
+        drawingTools.onDraw(function(geometry) {
+          // get the polygon user drawing
+          var userPolygon = geometry;
+          
+          // calculate pixels number inside the polygon user draw
+          var pixelCount = cropYieldLayer.reduceRegion({
+            reducer: ee.Reducer.count(),
+            geometry: userPolygon,
+            scale: 30,
+            maxPixels: 1e9
+          });
+          
+          //calculate average yield user draw
+         var meanStats = cropYieldLayer.reduceRegion({
+          reducer: ee.Reducer.mean(),
+          geometry: userPolygon,
+          scale: 30,
+          maxPixels: 1e9
+        });
+          // print(meanStats)
+
+            // combined 2 results
+          var results = ee.Dictionary({
+              meanYield: meanStats.get('YIELDpredicted'),
+              pixelCount: pixelCount.get('YIELDpredicted')
+          });
+
+          // calculate average yield, crop area, total yield, and update labels
+          results.evaluate(function(values)  {
+            resultsPanel.clear();
+            
+          var area_sumLabel = ui.Label({
+            value: 'Calculating...',
+            style: {fontSize: '14px', padding: '0px 50px'}
+          });
+          
+          var meanYield_sumLabel = ui.Label({
+            value: 'Calculating...',
+            style:{fontSize: '14px', padding: '0px 50px'}
+          });
+          
+          var count_totalYieldLabel = ui.Label({
+            value: 'Calculating...',
+            style:{fontSize: '14px', padding: '0px 50px'}
+          });
+      
+          resultsPanel.add(area_sumLabel);
+          resultsPanel.add(meanYield_sumLabel);
+          resultsPanel.add(count_totalYieldLabel);
+      
+          meanYield_sumLabel.setValue('Average Yield: ' + values.meanYield.toFixed(2) + ' BU/Acre');
+      
+          var areaInSqKm = (values.pixelCount / 1e6) * 900;
+          var areaInAcres = areaInSqKm * 247.105;
+          area_sumLabel.setValue('Crop Area: ' + areaInSqKm.toFixed(2) + 
+                                  ' km² (' + areaInAcres.toFixed(2) + ' Acres)');
+                                  
+          var totalYield = areaInAcres * values.meanYield;
+          count_totalYieldLabel.setValue('Total Yield: ' + totalYield.toFixed(2) + ' BU'); 
+           
+          var yieldPrice = totalYield * cropPrice;
+          var yieldPriceLabel = ui.Label({
+              value: 'Total Yield Value: ' + yieldPrice.toFixed(2) + ' $', 
+              style: {fontSize: '13px', padding: '0px 50px'}
+            });
+          resultsPanel.add(yieldPriceLabel);
+            
+            });
+            
+        });
+
+      }
+      initializeAreaLevelMode();
+      
+    }
+    
+  }
+}),
+
+ui.Label('Select Year:'),
+ui.Select({
+  items: ['Select...', '2018', '2019', '2020', 
+             '2021', '2022', '2023', '2024'],
+  value: 'Select...',
+  onChange: function(year) {
+    
+    // update global variable selectedYear, the year user chose
+    selectedYear = year;
+    updateMap();
+
+  }
+}),
+
+ui.Label('Select Crop:'),
+ui.Select({
+  items: ['Select...', 'Soybean', 'Corn', 'Wheat'],
+  value: 'Select...',
+  onChange: function(crop) {
+    
+    selectedCrop = crop;
+    
+    // set cropPrice according to selected 
+    if (selectedCrop === 'Soybean') {
+      cropPrice = 11.90; 
+    } else if (selectedCrop === 'Wheat') {
+      cropPrice = 6.07; 
+    } else if (selectedCrop === 'Corn') {
+      cropPrice = 5.80; 
+    } else {
+      cropPrice = 0;
+    }
+    
+    updateMap();
+    
+  }
+}),
+
+statsLabel_1,
+statsLabel_2</code></pre>
+<p>], style: {position: ‘top-right’} });</p>
+<p>Map.add(panel);</p>
+<p>// Add a sub-panel to show calculation info var resultsPanel = ui.Panel({ layout: ui.Panel.Layout.Flow(‘vertical’), style: {width: ‘310px’} }); panel.add(resultsPanel);</p>
+<p>// update new layers accoording to user’s selection function updateMap() {</p>
+<p>// // Remove particular layers // Map.layers().forEach(function(layer) { // var layerName = layer.getName(); // if (layerName.indexOf(‘YIELD_’) === 0) { // Map.remove(layer); // } // });</p>
+<p>Map.layers().reset();</p>
+<p>// Show layers if user choose both selections if (selectedYear !== ‘Select…’ &amp;&amp; selectedCrop !== ‘Select…’) {</p>
+<pre><code>  cropYieldLayer = cropLayers[selectedCrop][selectedYear];
+
+if (cropYieldLayer) {
+  var layerName = selectedCrop + '_' + selectedYear;
+  Map.addLayer(cropYieldLayer, {}, 'YIELD_' + layerName);
+}</code></pre>
+<p>}</p>
+<p>// add the counties layer Map.addLayer(ndCounties, {}, ‘ND Counties’);</p>
+<p>}</p>
+<p>```:</p>
 </section>
 <section id="interface-code" class="level3">
 <h3 class="anchored" data-anchor-id="interface-code">Interface Code:</h3>
