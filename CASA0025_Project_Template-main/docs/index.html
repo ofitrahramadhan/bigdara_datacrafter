@@ -142,30 +142,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="problem-statement" class="level2">
 <h2 class="anchored" data-anchor-id="problem-statement"><strong>Problem Statement</strong></h2>
-<p>What is the problem you’re trying to address using this application?</p>
+<p>North Dakota, a state in the Midwestern United States, is popular with agricultural investors for its abundant agricultural resources and vast farmland. However, the agencies like – banks, crop insurance companies, etc need a tool that can predict the crop yield value of a particular farm to ensure that they can safeguard their investment. In this regard, we create CROPINVEST, a GEE application that monitors the environment to predict crop yields, and based on these yields, we obtain the market value of the crop, which in turn can help end users (banks, crop insurance companies ,etc) to accurately and scientifically capture the farms potential to pay the crop loan amount or the risk associated with the insured crops and enable stakeholders to make informed decisions that optimize agricultural productivity, market strategies, and economic outcomes.</p>
 </section>
 <section id="end-user" class="level2">
 <h2 class="anchored" data-anchor-id="end-user"><strong>End User</strong></h2>
 <ul>
-<li>Governments
-<ul>
-<li>To anticipate and prepare for potential crop deficits or surpluses in a season, ensuring timely and effective responses.</li>
-<li>Developing infrastructure to store and transport crops efficiently.</li>
-</ul></li>
 <li>Insurance Companies
 <ul>
-<li>Determining insurance premiums based on potential crop yields to balance risk and cost.</li>
-<li>Managing financial exposure if low yield or drought conditions prevail, which could lead to substantial claims from farmers</li>
+<li>Based on potential crop yields, charge Insurance premiums to farmers thus mitigating financial losses from decreased production.</li>
+<li>Managing financial exposure if low yield or drought conditions prevail, which could lead to substantial claims from farmers.</li>
 </ul></li>
 <li>Banks
 <ul>
-<li>Deciding on the financial viability of providing loans to farmers based on predicted crop yields.</li>
-<li>Adjusting loan interest rates based on the predicted crop yield and associated risk to the bank’s funds.</li>
+<li>Utilize it to evaluate loan feasibility for farmers and adjust interest rates based on predicted yields and associated risks.</li>
 </ul></li>
 <li>Farmer Associations
 <ul>
-<li>Using data to predict crop yields, helping farmers to secure their future by preparing for potential challenges.</li>
-<li>Identifying areas that may require enhanced irrigation efforts to improve crop yields, ensuring optimal resource allocation.</li>
+<li>Utilize it to forecast yields, plan for adverse conditions, and identify areas needing more irrigation.</li>
+</ul></li>
+<li>Governments
+<ul>
+<li>To anticipate and prepare for potential crop deficits or surpluses at a county level and thus developing policies/infrastructure for the same.</li>
 </ul></li>
 </ul>
 </section>
@@ -303,7 +300,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="interface" class="level2">
 <h2 class="anchored" data-anchor-id="interface"><strong>Interface</strong></h2>
-<p>Here is a presentation to show, how our application work:</p>
+<p>CROPINVEST supports insurance companies, banks, and farmer associations with advanced features for forecasting crop yields in North Dakota for wheat, corn, and soybeans. Users can select different Crops and Years and utilize two key functionalities: a County feature to display crop yields, planting area, total production, and county-wide crop price totals via clickable maps; and a custom Area feature allowing users to draw specific regions to analyze crop yields, areas planted, and aggregate pricing. This interface ensures banks and insurance companies can assess financial risks effectively, while farmers gain crucial insights into expected yields and market conditions. Here is brief overview of how our application works:</p>
 <div style="position: relative; width: 100%; height: 0; padding-top: 56.2500%;
  padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden;
  border-radius: 8px; will-change: transform;">
@@ -448,7 +445,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="methodology-code" class="level3">
 <h3 class="anchored" data-anchor-id="methodology-code">Methodology Code:</h3>
 <ul>
-<li>This part need to be filled</li>
+<li>Considering the impact of environmental factors on crop growth within designated time constraints, our project initially explored nine parameters from the GEE database. We employed a Random Forest model to perform importance testing on these parameters for each specific crop type. Based on the results of this testing, we selected five or six key variables per crop to serve as independent variables in our predictive models. The variables in Table-1 were chosen due to their direct influence on plant growth and yield across various crops like wheat, soybeans, and corn over the period from 2015 to 2023.</li>
 </ul>
 </section>
 <section id="interface-code" class="level3">
