@@ -95,20 +95,21 @@ Previous studies showed that RF is an effective and universal machine learning m
 #### **Building Random Forest Model:**
 
 1. **Prepare original CSV including the three types of crop among several X variables and Y variable (the crop yield)**
-<br><br>     
-2. **Prepare training/validation data**
-    - Add a random attribute to the data set with a random number.
-    - Split 80% of data for training and 20% of that for testing.       
-<br><br> 
+   
+2. **Prepare training/validation data**    
+
 3. **Use the training data to train three different RF Models in GEE**
-    - ee.Classifier.smileRandomForest(100, null, 1, 0.5, null, 0).setOutputMode('REGRESSION')
-    - Notice ‘setOutputMode’ is set to ‘REGRESSION’. This command is the most important for running Random Forest regression models in GEE
-<br><br> 
+
 #### **Validation**
 
 To get the performance of our models, we can use the test data from the previous split. We used R square and Root Mean Squared Error (RMSE) to validate our models. There are some graphs showing these metrics: 
 
-![validation](images/wheat_perform.jpg)
+![wheat](images/wheat_perform.jpg)
+
+![corn](images/corn_perform.jpg)
+
+![soybean](images/soybean_perform.jpg)
+
 
 ### Interface
 
