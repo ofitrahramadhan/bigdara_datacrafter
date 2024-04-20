@@ -150,67 +150,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="data" class="level2">
 <h2 class="anchored" data-anchor-id="data"><strong>Data</strong></h2>
-<p>Datasets that we have used &amp; the relevant data from the dataset which we have used are described below in detail:-</p>
-<ol type="1">
-<li><strong>United States Census Bureau TIGER Dataset</strong> It contains the boundary information i.e.&nbsp;counties of states which are the primary legal divisions units of US states.
-<ul>
-<li><em>Dataset:</em> ee.ImageCollection(“TIGER/2016/Counties”)</li>
-<li><em>Dataset Provider:</em> United States Census Bureau</li>
-<li><em>Data Used for our Study:</em> <code>STATEFP</code> parameter of the dataset which provides the State FIPS code &amp; the North Dakota value is used. <br><br><br>
-</li>
-</ul></li>
-<li><strong>USDA NASS Cropland Data Layers</strong> It is a crop-specific land cover data layer created annually for the continental United States using moderate resolution satellite imagery and extensive agricultural ground truth.
-<ul>
-<li><em>Dataset:</em> ee.FeatureCollection(“USDA/NASS/CDL”)</li>
-<li><em>Dataset Provider:</em> USDA National Agricultural Statistics Service</li>
-<li><em>Data Used for our Study:</em> <code>cropland</code> values for different crops of our study are used Wheat, Corn &amp; Soybean Values provided from the Cropland Table. <br><br><br>
-</li>
-</ul></li>
-<li><strong>MOD13Q1.061 Terra Vegetation Indices 16-Day Global</strong> It provides Normalized Difference Vegetation Index (NDVI) value on a per pixel basis.
-<ul>
-<li><em>Dataset:</em> ee.ImageCollection(“MODIS/061/MOD13Q1”)</li>
-<li><em>Dataset Provider:</em> NASA LP DAAC at the USGS EROS Center</li>
-<li><em>Data Used for our Study:</em> <code>NDVI</code> parameter of the dataset which provides the Normalized Difference Vegetation Index. <br><br><br>
-</li>
-</ul></li>
-<li><strong>GRIDMET:Gridded Surface Meteorological Dataset</strong> It provides the high spatial resolution (~4-km) daily surface fields of temperature, precipitation, winds, humidity and radiation across the contiguous United States from 1979.
-<ul>
-<li><em>Dataset:</em> ee.ImageCollection(“IDAHO_EPSCOR/GRIDMET”)</li>
-<li><em>Dataset Provider:</em> USDA National Agricultural Statistics Service</li>
-<li><em>Data Used for our Study:</em> <code>pr</code> parameter of the dataset which provides the ‘Precipitation amount’ in mm (daily total) <br><br><br>
-</li>
-</ul></li>
-<li><strong>Sentinel-1 SAR GRD</strong> It contains the boundary information i.e.&nbsp;counties of states which are the primary legal divisions units of US states.
-<ul>
-<li><em>Dataset:</em> ee.ImageCollection(“COPERNICUS/S1_GRD”)</li>
-<li><em>Dataset Provider:</em> European Union/ESA/Copernicus</li>
-<li><em>Data Used for our Study:</em> <code>VV</code> parameter of the dataset which provides ‘Single co-polarization, vertical transmit/vertical receive’ in dB. <br><br></li>
-</ul></li>
-<li><strong>SPL3SMP_E.005 SMAP L3 Radiometer Global Daily 9km Soil Moisture</strong> It provides a daily composite of global land surface conditions retrieved by the Soil Moisture Active Passive (SMAP) L-Band radiometer. The daily data here were collected from the descending (local solar time of 6 am) and ascending (local solar time of 6 pm) passes.
-<ul>
-<li><em>Dataset:</em> ee.ImageCollection(“NASA/SMAP/SPL3SMP_E/005”)</li>
-<li><em>Dataset Provider:</em> Google and NSIDC</li>
-<li><em>Data Used for our Study:</em> <code>soil_moisture_am</code> &amp; <code>soil_moisture_pm</code>parameter of the dataset which provides ’Retrieved soil moisture estimate from the disaggregated/downscaled vertical polarization brightness temperature at 9-km grid cell one at AM overpass &amp; other at PM overpass.in dB. <br><br></li>
-</ul></li>
-<li><strong>MOD11A1.061 Terra Land Surface Temperature</strong> MOD11A1 V6.1 product provides daily land surface temperature (LST) along with other parameters.
-<ul>
-<li><em>Dataset:</em> ee.ImageCollection(“NASA/SMAP/SPL3SMP_E/005”)</li>
-<li><em>Dataset Provider:</em> NASA LP DAAC at the USGS EROS Center</li>
-<li><em>Data Used for our Study:</em> <code>LST_Day_1km</code> &amp; <code>LST_Night_1km</code>parameter of the dataset which provides ‘Daytime Land Surface Temperature’ &amp; Daytime Land Surface Temperature’ both in Kelvin (K). <br><br></li>
-</ul></li>
-<li><strong>MCD18C2.061 Photosynthetically Active Radiation Daily 3 hour</strong> The MCD18C2 Version 6.1 is a Moderate Resolution Imaging Spectroradiometer (MODIS) Terra and Aqua combined Photosynthetically Active Radiation (PAR) gridded Level 3 product produced daily at 0.05 degree (5,600 meters at the equator) resolution with estimates of PAR every 3 hours.
-<ul>
-<li><em>Dataset:</em> ee.ImageCollection(“MODIS/061/MCD18C2”)</li>
-<li><em>Dataset Provider:</em> NASA LP DAAC at the USGS EROS Center</li>
-<li><em>Data Used for our Study:</em> <code>GMT_1200_PAR</code> parameter of the dataset which provides ‘Total PAR at GMT 12:00’.PAR is incident solar radiation in the visible spectrum (400-700 nanometers) and is an important variable in land-surface models having use in agriculture &amp; other scientific applications. <br><br></li>
-</ul></li>
-<li><strong>MOD16A2GF.061: Terra Net Evapotranspiration</strong> It includes inputs of daily meteorological reanalysis data along with MODIS remotely sensed data products such as vegetation property dynamics, albedo, and land cover. The pixel values for the two Evapotranspiration layers (ET and PET) are the sum of all eight days within the composite period, and the pixel values for the two Latent Heat layers (LE and PLE) are the average of all eight days within the composite peri.
-<ul>
-<li><em>Dataset:</em> ee.ImageCollection(“MODIS/061/MOD16A2GF”)</li>
-<li><em>Dataset Provider:</em> NASA LP DAAC at the USGS EROS Center</li>
-<li><em>Data Used for our Study:</em> <code>ET</code> parameter of the dataset which provides ‘Total evapotranspiration’ in kg/m^2/8day.s. <br><br></li>
-</ul></li>
-</ol>
+<p>Datasets that we have used from Google Earth Engine:- - <strong>United States Census Bureau TIGER Dataset</strong> - <strong>USDA NASS Cropland Data Layers</strong> - <strong>MOD13Q1.061 Terra Vegetation Indices 16-Day Global</strong> - <strong>GRIDMET:Gridded Surface Meteorological Dataset</strong> - <strong>SPL3SMP_E.005 SMAP L3 Radiometer Global Daily 9km Soil Moisture</strong> - <strong>MOD11A1.061 Terra Land Surface Temperature</strong> - <strong>MCD18C2.061 Photosynthetically Active Radiation Daily 3 hour</strong> - <strong>MOD16A2GF.061: Terra Net Evapotranspiration</strong></p>
+<p>Datasets used from other sources:- - <strong>Crop Yield Data</strong> It includes county-wise crop yield data. Provider : <a href="https://quickstats.nass.usda.gov/">United States Department of Agriculture</a> - <strong>Current Crop Price Data</strong> We use the Financial Times current crop price data. Provider: <a href="https://markets.ft.com/data/commodities">Financial Times</a></p>
 </section>
 <section id="methodology" class="level2">
 <h2 class="anchored" data-anchor-id="methodology"><strong>Methodology</strong></h2>
@@ -395,6 +336,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="interface-code" class="level3">
 <h3 class="anchored" data-anchor-id="interface-code">Interface Code:</h3>
 <ul>
+<li>In this section, we perform calculations on the crop layers obtained from the random forest prediction model to generate various outputs. By defining global variables, we dynamically update the crop layers based on the user’s selected year and crop type. The core functionality lies in the computation logic for the County level and Area level modes.</li>
+<li>In the County level mode, a click event listener is created to provide real-time feedback on the user-selected county. The number of pixels within the county is calculated, enabling the estimation of the crop area. Utilizing historical and predicted average yield data and the current year’s average market price, the total production and total value are computed.</li>
+<li>In the Area level mode extends the calculation scope to a user-defined polygon region, with a similar computation method to the County level mode. The “Clear Selected Area Button” allows users to remove unnecessary polygons in the Area level mode, enhancing usability.</li>
 <li>The Interface Code is as follows :</li>
 </ul>
 <div class="sourceCode" id="cb2"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ——————————————————————————define crop layers————————————————————————————————</span></span>

@@ -29,33 +29,47 @@ Who are you building this application for? How does it address a need this commu
 
 ## **Data**
 
-Datasets that we have used from Google Earth Engine:-
-- **United States Census Bureau TIGER Dataset**
-- **USDA NASS Cropland Data Layers**
-- **MOD13Q1.061 Terra Vegetation Indices 16-Day Global**
-- **GRIDMET:Gridded Surface Meteorological Dataset**
-- **SPL3SMP_E.005 SMAP L3 Radiometer Global Daily 9km Soil Moisture**
-- **MOD11A1.061 Terra Land Surface Temperature**
-- **MCD18C2.061 Photosynthetically Active Radiation Daily 3 hour**
-- **MOD16A2GF.061: Terra Net Evapotranspiration**
+### Datasets
 
-Datasets used from other sources:-
-- **Crop Yield Data**
-  It includes county-wise crop yield data. Provider : [United States Department of Agriculture](https://quickstats.nass.usda.gov/)
-- **Current Crop Price Data**
-  We use the Financial Times current crop price data. Provider: [Financial Times](https://markets.ft.com/data/commodities)
-  
+- **A1 - United States Census Bureau TIGER Dataset**: Includes boundary information for U.S. counties.
+- **A2 - USDA NASS Cropland Data Layers**: Provides crop-specific land cover data layers.
+- **A3 - MOD16A2GF.061 Terra Net Evapotranspiration**: Measures the total evapotranspiration over land.
+- **A4 - MOD11A1.061 Terra Land Surface Temperature**: Captures daily land surface temperature data.
+- **A5 - MOD13Q1.061 Terra Vegetation Indices 16-Day Global**: Offers 16-day global vegetation indices.
+- **A6 - GRIDMET: Gridded Surface Meteorological Dataset**: Delivers high-resolution meteorological data.
+- **A7 - MCD18C2.061 Photosynthetically Active Radiation Daily 3 hour**: Provides estimates of solar radiation.
+- **A8 - SPL3SMP_E.005 SMAP L3 Radiometer Global Daily 9km Soil Moisture**: Reports global daily soil moisture.
+- **A9 - Crop Yield Data**: Contains county-wise crop yield data. Provider: [United States Department of Agriculture](https://quickstats.nass.usda.gov/)
+- **A10 - Current Crop Price Data**: Uses current crop price data from the Financial Times. Provider: [Financial Times](https://markets.ft.com/data/commodities)
+
+### Data Variables Overview
+
+| Data Type  | Dataset | Description                                  | Data Used        |
+|------------|---------|----------------------------------------------|------------------|
+| GEE DATA   | A1      | County wise Boundary Information             | STATEFP          |
+| GEE DATA   | A2      | Crop-specific Land Cover Data Type           | cropland         |
+| GEE DATA   | A3      | Evapo-Transpiration                          | ET               |
+| GEE DATA   | A4      | Land Surface Temperature Day                 | LST_Day_1km      |
+| GEE DATA   | A4      | Land Surface Temperature Night               | LST_Night_1km    |
+| GEE DATA   | A5      | Normalized Difference Vegetation Index       | NDVI             |
+| GEE DATA   | A6      | Precipitation                                | pr               |
+| GEE DATA   | A7      | Photosynthetically Active Radiation          | GMT_1200_PAR     |
+| GEE DATA   | A8      | Day Soil Moisture                            | soil_moisture_am |
+| GEE DATA   | A8      | Night Soil Moisture                          | soil_moisture_pm |
+| OTHER DATA | A9      | USDA Crop Yield (Year Wise)                  | Yield            |
+| OTHER DATA | A10     | Crop Day Price $ - Financial Times           | Price            |
+
 ## **Methodology**
 
 Previous studies showed that RF is an effective and universal machine learning method for crop yield prediction on a regional and global scale with high accuracy and precision and ease of use (Jeong et al., 2016.; Prasad et al., 2021).
 
 ### Building Random Forest Model:
 
-1. **Prepare original CSV including the three types of crop among several X variables and Y variable (the crop yield)**
+1. *Prepare original CSV including the three types of crop among several X variables and Y variable (the crop yield)*
    
-2. **Prepare training/validation data**    
+2. *Prepare training/validation data*
 
-3. **Use the training data to train three different RF Models in GEE**
+3. *Use the training data to train three different RF Models in GEE*
 
 ### Validation
 
@@ -136,15 +150,6 @@ ee.AuthcessYear(year):
                              .select('pr')
     mean_precipitation = precipitation_dataset.mean().rename('PA')
 
-    # Load Sentinel-1 C-band SAR Image Collection for the given year, select VV polarization
-    #`VV` parameter of the dataset which provides 'Single co-polarization, vertical transmit/vertical receive' in dB.
-    s1_dataset = ee.ImageCollection("COPERNICUS/S1_GRD")\
-                   .filter(ee.Filter.eq('instrumentMode', 'IW'))\
-                   .filter(ee.Filter.listContains('transmitterReceiverPolarisation', 'VV'))\
-                   .filter(ee.Filter.date(f'{year}-01-01', f'{year}-12-31'))\
-                   .select('VV')
-    mean_s1_vv = s1_dataset.mean().rename('SAR')
-
     # Load Radiometer Global Daily 9 km Soil Moisture AM
     #`soil_moisture_am` & `soil_moisture_pm` parameter of the dataset which provides 'Retrieved soil moisture estimate from the
     # disaggregated/downscaled vertical polarization brightness temperature at 9-km grid cell one at AM overpass & other at  PM overpass. in dB.
@@ -152,11 +157,11 @@ ee.AuthcessYear(year):
                     .filter(ee.Filter.date(f'{year}-05-01', f'{year}-10-01'))\
                     .select('soil_moisture_am')
     mean_soil_moisture = smap_dataset.mean().rename('SMS_AM')
+    
     # Load Radiometer Global Daily 9 km Soil Moisture PM
-
     smapDataset_pm = ee.ImageCollection("NASA/SMAP/SPL3SMP_E/005")\
                        .filter(ee.Filter.date(f'{year}-05-01', f'{year}-10-01'))\
-                       .select('soil_moisture_am') 
+                       .select('soil_moisture_pm') 
     meanSoilMoisture_pm = smapDataset_pm.mean().rename('SMS_PM')
     
     # Load MODIS Land Surface Temperature DAY
@@ -686,3 +691,4 @@ function updateMap() {
   Map.addLayer(ndCounties, {}, 'ND Counties');
 }
 ```
+
