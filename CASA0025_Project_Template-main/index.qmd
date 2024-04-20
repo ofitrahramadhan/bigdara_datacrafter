@@ -139,8 +139,8 @@ Here is a presentation to show, how our application work:
 - Afterwards, the Yield data is obtained from the [United States Department of Agriculture](https://quickstats.nass.usda.gov/) for each of the years and a final dataset is obtained which has all the X Variables (GEOID,NDVI,PA,SAR,SMS_AM,LST_DAY,SMS_PM,LST_NIGHT,PAR,ET) & Y variable (YIELD).
 
 ```python
-
-pip install earthengine-api
+# Commented the line below as I have installed the gee api already
+#pip install earthengine-api
 import ee
 ee.Authenticate()
 ee.Initialize()
@@ -259,10 +259,11 @@ def processYear(year):
     # Commented the line below as I have got the data in my drive already
     #ee.batch.Export.table.toDrive(**export_params).start()
 
-# Example of processing each year
-for year in range(2000, 2024):
-     processYear(year)
+    # Example of processing each year
+    for year in range(2000, 2024):
+        processYear(year)
 
 ### Methodology Code:
 
 ### Interface Code:
+
