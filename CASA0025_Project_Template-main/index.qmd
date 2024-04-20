@@ -1,5 +1,5 @@
 ---
-title: CROPINVEST
+title: Project Summary
 jupyter:
   jupytext:
     text_representation:
@@ -15,19 +15,18 @@ jupyter:
 
 ![](Captnknure.JPG)
 
-## Project Summary 
 
 CROPINVEST - Crop Yield Estimator for the State of North Dakota, USA
 
-### Problem Statement 
+## Problem Statement 
 
 What is the problem you’re trying to address using this application? 
 
-### End User 
+## End User 
 
 Who are you building this application for? How does it address a need this community has?
 
-### Data
+## Data
 
 Datasets that we have used & the relevant data from the dataset which we have used are described below in detail:-
 
@@ -87,11 +86,11 @@ The pixel values for the two Evapotranspiration layers (ET and PET) are the sum 
    - *Data Used for our Study:* `ET` parameter of the dataset which provides 'Total evapotranspiration' in kg/m^2/8day.s.
 <br><br>
 
-### Methodology
+## Methodology
 
 Previous studies showed that RF is an effective and universal machine learning method for crop yield prediction on a regional and global scale with high accuracy and precision and ease of use (Jeong et al., 2016.; Prasad et al., 2021).
 
-#### **Building Random Forest Model:**
+### **Building Random Forest Model:**
 
 1. **Prepare original CSV including the three types of crop among several X variables and Y variable (the crop yield)**
    
@@ -99,7 +98,7 @@ Previous studies showed that RF is an effective and universal machine learning m
 
 3. **Use the training data to train three different RF Models in GEE**
 
-#### **Validation**
+### **Validation**
 
 To get the performance of our models, we can use the test data from the previous split. We used R square and Root Mean Squared Error (RMSE) to validate our models. There are some graphs showing these metrics: 
 
@@ -109,7 +108,7 @@ To get the performance of our models, we can use the test data from the previous
   <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
     src="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAGC-BnkFTM&#x2F;htfGBGmKgWUiwQRlwaqXgQ&#x2F;view?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
   </iframe>
-<ad Wani
+<ad Wi
 
 #### **Interface**nterface
 
@@ -272,3 +271,6 @@ for year in range(2000, 2024):
 ### Methodology Code:
 
 ### Interface Code:
+
+
+
