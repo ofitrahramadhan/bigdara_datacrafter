@@ -124,8 +124,6 @@ Here is a presentation to show, how our application work:
 
 ## The Application 
 
-The link for our application is :
-
 :::{.column-page}
 
 <iframe src='https://songzimeng.users.earthengine.app/view/north-dakota-crop-yield' width='100%' height='700px'></iframe>
@@ -268,4 +266,3 @@ for year in range(2000, 2024):
 ### Methodology Code:
 
 ### Interface Code:
-
