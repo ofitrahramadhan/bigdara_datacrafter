@@ -139,10 +139,7 @@ Here is a presentation to show, how our application work:
 - Afterwards, the Yield data is obtained from the [United States Department of Agriculture](https://quickstats.nass.usda.gov/) for each of the years and a final dataset is obtained which has all the X Variables (GEOID,NDVI,PA,SAR,SMS_AM,LST_DAY,SMS_PM,LST_NIGHT,PAR,ET) & Y variable (YIELD).
 
 ```python
-pip install earthengine-api
-import ee
-ee.Authenticate()
-ee.Initialize()
+
 def processYear(year):
     # Load the CDL dataset for the given year
     dataset = ee.ImageCollection('USDA/NASS/CDL')\
@@ -154,7 +151,7 @@ def processYear(year):
     #`STATEFP` parameter of the dataset which provides the State FIPS code & the North Dakota value is used.
     counties = ee.FeatureCollection('TIGER/2016/Counties')
     nd = counties.filter(ee.Filter.eq('STATEFP', '38'))
-
+    
     # Identify corn areas in North Dakota
     #`cropland` values for different crops of our study are used Wheat, Corn & Soybean Values provided from the Cropland Table.
     corn = crop_landcover.eq(1).Or(crop_landcover.eq(12)).Or(crop_landcover.eq(13))
@@ -167,7 +164,7 @@ def processYear(year):
     ndvi = NDVI_dataset.select('NDVI')
     mean_ndvi = ndvi.mean().rename('NDVI')
     cornNDVI = mean_ndvi.updateMask(masked_corn)
-
+    
     # Calculate precipitation using GRIDMET data
     #`pr` parameter of the dataset which provides the 'Precipitation amount' in mm (daily total)
     precipitation_dataset = ee.ImageCollection("IDAHO_EPSCOR/GRIDMET")\
@@ -192,60 +189,65 @@ def processYear(year):
                     .select('soil_moisture_am')
     mean_soil_moisture = smap_dataset.mean().rename('SMS_AM')
     # Load Radiometer Global Daily 9 km Soil Moisture PM
+
     smapDataset_pm = ee.ImageCollection("NASA/SMAP/SPL3SMP_E/005")\
                        .filter(ee.Filter.date(f'{year}-05-01', f'{year}-10-01'))\
-                       .select('soil_moisture_am')
+                       .select('soil_moisture_am') 
     meanSoilMoisture_pm = smapDataset_pm.mean().rename('SMS_PM')
-
+    
     # Load MODIS Land Surface Temperature DAY
     #`LST_Day_1km` & `LST_Night_1km` parameter of the dataset which provides 'Daytime Land Surface Temperature' &
     # Nighttime Land Surface Temperature' both in Kelvin (K).
     lstDataset = ee.ImageCollection("MODIS/061/MOD11A1")\
                    .filter(ee.Filter.date(f'{year}-05-01', f'{year}-10-01'))
+ 
     lstmean_celsius = lstDataset.select('LST_Day_1km')\
                                 .mean()\
                                 .multiply(0.02)\
                                 .subtract(273.15)\
                                 .rename('LST_DAY')
-
     # Load MODIS Land Surface Temperature NIGHT
     lstDataset_night = ee.ImageCollection("MODIS/061/MOD11A1")\
                          .filter(ee.Filter.date(f'{year}-05-01', f'{year}-10-01'))
+ 
     lstmean_celsius_night = lstDataset_night.select('LST_Night_1km')\
                                               .mean()\
                                               .multiply(0.02)\
                                               .subtract(273.15)\
                                               .rename('LST_NIGHT')
-
-    # Photosynthetically Active Radiation Daily 3-Hour
+                         
+    # Photosynthetically Active Radiation Daily 3-Hour 
     #`GMT_1200_PAR` parameter of the dataset which provides 'Total PAR at GMT 12:00'. PAR is incident solar radiation in
     # the visible spectrum (400-700 nanometers) and is an important variable in land-surface models having use in agriculture &
     # other scientific applications.
     par_12 = ee.ImageCollection("MODIS/061/MCD18C2")\
                .filter(ee.Filter.date(f'{year}-05-01', f'{year}-10-01'))\
                .select('GMT_1200_PAR')
-    mean_par_12 = par_12.mean().rename('PAR'); # Calculate the Photosynthetically Active Radiation at 12 PM
+                        
+    mean_par_12 = par_12.mean().rename('PAR'); # Calculate the Photosynthetically Active Radiation at 12
 
+                         
     # Net Evapotranspiration
     # `ET` parameter of the dataset which provides 'Total evapotranspiration' in kg/m^2/8day.s.
     netevapo = ee.ImageCollection("MODIS/061/MOD16A2GF")\
                  .filter(ee.Filter.date(f'{year}-05-01', f'{year}-10-01'))\
                  .select('ET')
-
+                    
     mean_netevapo = netevapo.mean().rename('ET')  # Calculate the mean Soil Moisture
+
 
     # Combine all layers
     combinedDataset = cornNDVI.addBands(mean_precipitation).addBands(mean_s1_vv).addBands(mean_soil_moisture).addBands(lstmean_celsius).addBands(meanSoilMoisture_pm).addBands(lstmean_celsius_night).addBands(mean_par_12).addBands(mean_netevapo)
 
     # Reduce regions and calculate mean values over the specified areas
     combined_mean = combinedDataset.reduceRegions(
-     collection=nd,
-     reducer=ee.Reducer.mean(),
-     scale=30,
-     tileScale=4,
-     )
+        collection=nd,
+        reducer=ee.Reducer.mean(),
+        scale=30,
+        tileScale=4,
+    )
 
-     # Define export parameters
+    # Define export parameters
     export_params = {
         'collection': combined_mean,
         'description': f'combined_{year}',
@@ -258,11 +260,12 @@ def processYear(year):
     # Commented the line below as I have got the data in my drive already
     #ee.batch.Export.table.toDrive(**export_params).start()
 
-    # Example of processing each year
-    for year in range(2000, 2024):
-        processYear(year)
+# Example of processing each year
+for year in range(2000, 2024):
+    processYear(year)
+
+```
 
 ### Methodology Code:
 
 ### Interface Code:
-
