@@ -105,15 +105,11 @@ How are you using this data to address the problem?
     - ee.Classifier.smileRandomForest(100, null, 1, 0.5, null, 0).setOutputMode('REGRESSION')
     - Notice ‘setOutputMode’ is set to ‘REGRESSION’. This command is the most important for running Random Forest regression models in GEE
 <br><br> 
-
 #### **Validation**
     - X variables
     - Importances
     - R2
     - RMSE
-
-#### (optional) **Run the model** 
-    (result of the crop yield rasters)
 
 ### Interface
 
