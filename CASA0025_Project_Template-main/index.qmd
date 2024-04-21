@@ -670,23 +670,39 @@ var clearButton = ui.Button({
 
     resultsPanel.clear();
   },
-  style: {margin: '10px'}
+  style: {margin: '10px', position: 'bottom-center'}
 });
 
 
 // the main panel to select mode, year, croptype
 var panel = ui.Panel({
+  style: {position: 'middle-left',width: '20%',backgroundColor: 'white',padding: '10px'},
   widgets: [
     
     ui.Label('North Dakota Crop Yield', {
       fontWeight: 'bold',
       fontSize: '22px',
-      textAlign: 'center',
+      textAlign: 'left',
       stretch: 'horizontal'
       
     }),
     
-    ui.Label('Select Mode:'),
+    ui.Label('Welcome to North Dakota Crop Yield Calculator. Please '+
+    'select mode, year, and type of crop you want to estimate and '+
+    'click or draw your area of interest on the map with the toolbox on top-left of the screen. '+
+    'the result would be appear on the right side of webpage.', {
+      fontSize: '12px',
+    }),
+    
+    ui.Label('----------------------------------------------  ', {
+      fontWeight: 'bold'
+    }),
+    
+    
+    
+    ui.Label('Select Mode:', {
+      fontWeight: 'bold',
+    }),
     ui.Select({
       items: ['Select...','County Level', 'Area Level'],
       value: 'Select...',
@@ -699,8 +715,8 @@ var panel = ui.Panel({
           statsLabel_2.style().set('shown', false);
           
           // reset button
-          panel.remove(clearButton);
-          panel.add(clearButton);
+          Map.remove(clearButton);
+          Map.add(clearButton);
           
           // ban polygon drawing selection
           var drawingTools = Map.drawingTools();
@@ -734,25 +750,73 @@ var panel = ui.Panel({
             //print(averYield);
           
             // create labels
-            var countyLabel = ui.Label({
-              value: 'County: ' + countyName,
-              style: {fontSize: '13px', padding: '0px 50px'}
-            });
+            //var countyLabel = ui.Label({
+            //  value: 'County: ' + countyName,
+            //  style: {fontSize: '13px', padding: '0px 50px'}
+            //});
           
-            var count_sumLabel = ui.Label({
-              value: 'Calculating...',
-              style: {fontSize: '13px', padding: '0px 50px'}
-            });
+            //____county label under construction
+            var Result = ui.Label({
+                value:'Result : ',
+                style: {
+                  fontWeight: 'bold',
+                  fontSize: '18px',
+                  textAlign: 'left'
+                }
+              });
+              
+              var line = ui.Label('----------------------------------------------  ', {
+                fontWeight: 'bold'})
+                
+              
+              resultsPanel.add(Result);
+              resultsPanel.add(line);
+            
+            
+            
+            var countyPanel = ui.Panel({
+                layout: ui.Panel.Layout.flow('horizontal')
+              });
+              
+              var countyLabelup = ui.Label({
+                value:'County    : ',
+                style: {fontWeight: 'bold'}
+              });
+              var countyLabel = ui.Label({
+                  value: countyName, 
+                  style: {}
+                });
+              
+              countyPanel.add(countyLabelup);
+              countyPanel.add(countyLabel);
+              resultsPanel.add(countyPanel);
+
+            
+            
+            //____county label under construction
+          
+          
+          
+            //var count_sumLabel = ui.Label({
+            //  value: 'Calculating...',
+            //  style: {fontSize: '13px', padding: '0px 50px'}
+            //});
           
           // update labels by calculating
           // get the mean yield data
             averYield.evaluate(function(result) {
               var meanYield = result.mean;
-              var count_averYieldLabel = ui.Label({
-                value: 'Average Yield: ' + meanYield.toFixed(2) + ' BU/Acre', 
-                style: {fontSize: '13px', padding: '0px 50px'}
-              });
-                resultsPanel.add(count_averYieldLabel);
+              
+             
+
+              
+              //___
+              
+              //var count_averYieldLabel = ui.Label({
+              //  value: 'Average Yield: ' + meanYield.toFixed(2) + ' BU/Acre', 
+              //  style: {fontSize: '13px', padding: '0px 50px'}
+              //});
+              //  resultsPanel.add(count_averYieldLabel);
           });
           
             // calculate the area and total yield
@@ -760,29 +824,100 @@ var panel = ui.Panel({
 
               var areaInSqKm = (value / 1e6) * 900;
               var areaInAcres = areaInSqKm * 247.105;
-              count_sumLabel.setValue('Crop Area: ' + areaInSqKm.toFixed(2) + 
-                                      ' km² (' + areaInAcres.toFixed(2) + ' Acres)');
+              //count_sumLabel.setValue('Crop Area: ' + areaInSqKm.toFixed(2) + 
+              //                        ' km² (' + areaInAcres.toFixed(2) + ' Acres)');
                                       
+              //_____under construction: crop area
+              
+              var cropareaPanel = ui.Panel({
+                layout: ui.Panel.Layout.flow('horizontal')
+              });
+              
+              var cropareaLabelup = ui.Label({
+                value:'Crop Area : ',
+                style: {fontWeight: 'bold'}
+              });
+              var cropareaLabel = ui.Label({
+                  value: areaInSqKm.toFixed(2) + ' km² (' + areaInAcres.toFixed(2) + ' Acres)', 
+                  style: {}
+                });
+              
+              cropareaPanel.add(cropareaLabelup);
+              cropareaPanel.add(cropareaLabel);
+              resultsPanel.add(cropareaPanel);
+
+              
+              
+              //_____under construction: crop area
+              
+              
               averYield.evaluate(function(result) {
                 var meanYield = result.mean;
                 var totalYield = areaInAcres * meanYield;
-                var count_totalYieldLabel = ui.Label({
-                  value: 'Total Yield: ' + totalYield.toFixed(2) + ' BU', 
-                  style: {fontSize: '13px', padding: '0px 50px'}
+                
+                //___under construction
+                
+                var totalyieldPanel = ui.Panel({
+                layout: ui.Panel.Layout.flow('horizontal')
+              });
+              
+              var totalyieldLabelup = ui.Label({
+                value:'Total Yield : ',
+                style: {fontWeight: 'bold'}
+              });
+              var totalyieldLabel = ui.Label({
+                  value: totalYield.toFixed(2) + ' BU', 
+                  style: {}
                 });
+              
+             totalyieldPanel.add(totalyieldLabelup);
+              totalyieldPanel.add(totalyieldLabel);
+
+                
+                
+                //___under construction
                 var yieldPrice = totalYield * cropPrice;
-                var yieldPriceLabel = ui.Label({
-                  value: 'Total Yield Value: ' + yieldPrice.toFixed(2) + ' $', 
-                  style: {fontSize: '13px', padding: '0px 50px'}
+                
+                  //___under construction
+                
+                var totalyieldvaluePanel = ui.Panel({
+                layout: ui.Panel.Layout.flow('horizontal')
+              });
+              
+              var totalyieldvalueLabelup = ui.Label({
+                value:'Total Yield Value : ',
+                style: {fontWeight: 'bold'}
+              });
+              var totalyieldvalueLabel = ui.Label({
+                  value: '$ ' + yieldPrice.toFixed(2), 
+                  style: {}
                 });
-                resultsPanel.add(count_totalYieldLabel);
-                resultsPanel.add(yieldPriceLabel);
+              
+             totalyieldvaluePanel.add(totalyieldvalueLabelup);
+              totalyieldvaluePanel.add(totalyieldvalueLabel);
+
+                
+                
+                //___under construction
+                
+                
+                //var count_totalYieldLabel = ui.Label({
+                //  value: 'Total Yield: ' + totalYield.toFixed(2) + ' BU', 
+                //  style: {fontSize: '13px', padding: '0px 50px'}
+                //});
+                
+                //var yieldPriceLabel = ui.Label({
+                //  value: 'Total Yield Value: ' + yieldPrice.toFixed(2) + ' $', 
+                //  style: {fontSize: '13px', padding: '0px 50px'}
+                //});
+                resultsPanel.add(totalyieldPanel);
+                resultsPanel.add(totalyieldvaluePanel);
           });
             });
           
             // add the new label to sub-panel
-            resultsPanel.add(countyLabel);
-            resultsPanel.add(count_sumLabel);
+            //resultsPanel.add(countyLabel);
+            //resultsPanel.add(count_sumLabel);
           };
           
           Map.unlisten()
@@ -809,8 +944,8 @@ var panel = ui.Panel({
           Map.unlisten()
           
           //reset button
-          panel.remove(clearButton);
-          panel.add(clearButton);
+          Map.remove(clearButton);
+          Map.add(clearButton);
           
           // draw polygon
           var drawingTools = Map.drawingTools();
@@ -869,26 +1004,126 @@ var panel = ui.Panel({
                 style:{fontSize: '14px', padding: '0px 50px'}
               });
           
-              resultsPanel.add(area_sumLabel);
-              resultsPanel.add(meanYield_sumLabel);
-              resultsPanel.add(count_totalYieldLabel);
+              //resultsPanel.add(area_sumLabel);
+              //resultsPanel.add(meanYield_sumLabel);
+              //resultsPanel.add(totalYieldPanel);
           
+              //__
+              
+              var Result = ui.Label({
+                value:'Result : ',
+                style: {
+                  fontWeight: 'bold',
+                  fontSize: '18px',
+                  textAlign: 'left'
+                }
+              });
+              
+              var line = ui.Label('----------------------------------------------  ', {
+                fontWeight: 'bold'})
+                
+              
+              resultsPanel.add(Result);
+              resultsPanel.add(line);
+              
+              //__
+              
+              
+              //___
+              
+              var meanYieldPanel = ui.Panel({
+                layout: ui.Panel.Layout.flow('horizontal')
+              });
+              
+              var meanYieldLabelup = ui.Label({
+                value:'Average Yield : ',
+                style: {fontWeight: 'bold'}
+              });
+              var meanYieldLabel = ui.Label({
+                  value: values.meanYield.toFixed(2) + ' BU/Acre', 
+                  style: {}
+                });
+              
+              meanYieldPanel.add(meanYieldLabelup);
+              meanYieldPanel.add(meanYieldLabel);
+              resultsPanel.add(meanYieldPanel);
+              
+              
               meanYield_sumLabel.setValue('Average Yield: ' + values.meanYield.toFixed(2) + ' BU/Acre');
           
               var areaInSqKm = (values.pixelCount / 1e6) * 900;
               var areaInAcres = areaInSqKm * 247.105;
-              area_sumLabel.setValue('Crop Area: ' + areaInSqKm.toFixed(2) + 
-                                      ' km² (' + areaInAcres.toFixed(2) + ' Acres)');
+              
+              
+              
+              //___areaaaa
+              
+              var areaPanel = ui.Panel({
+                layout: ui.Panel.Layout.flow('horizontal')
+              });
+              
+              var areaLabelup = ui.Label({
+                value:'Crop Area : ',
+                style: {fontWeight: 'bold'}
+              });
+              var areaLabel = ui.Label({
+                  value: areaInSqKm.toFixed(2) + ' km² / ' + areaInAcres.toFixed(2) + ' Acres', 
+                  style: {}
+                });
+              
+              areaPanel.add(areaLabelup);
+              areaPanel.add(areaLabel);
+              resultsPanel.add(areaPanel);
+
+              
+              
+              //___areaaaa
+              
+              //area_sumLabel.setValue('Crop Area: ' + areaInSqKm.toFixed(2) + 
+              //                        ' km² (' + areaInAcres.toFixed(2) + ' Acres)');
                                       
-              var totalYield = areaInAcres * values.meanYield;
-              count_totalYieldLabel.setValue('Total Yield: ' + totalYield.toFixed(2) + ' BU'); 
+              var totalYield = areaInAcres * values.meanYield; //BU
+              
+              //_________
+              
+              var totalYieldPanel = ui.Panel({
+                layout: ui.Panel.Layout.flow('horizontal')
+              });
+              
+              var totalYieldLabelup = ui.Label({
+                value:'Total Yield : ',
+                style: {fontWeight: 'bold'}
+              });
+              var totalYieldLabel = ui.Label({
+                  value: totalYield.toFixed(2) + ' BU', 
+                  style: {}
+                });
+              
+              totalYieldPanel.add(totalYieldLabelup);
+              totalYieldPanel.add(totalYieldLabel);
+              resultsPanel.add(totalYieldPanel);
+              //_________
+              
+              //count_totalYieldLabel.setValue(totalYield.toFixed(2)); 
                
               var yieldPrice = totalYield * cropPrice;
+              
+              var yieldPricePanel = ui.Panel({
+                layout: ui.Panel.Layout.flow('horizontal')
+              });
+              
+              var yieldPriceLabelup = ui.Label({
+                value:'Total Yield Value : ',
+                style: {fontWeight: 'bold'}
+              });
               var yieldPriceLabel = ui.Label({
-                  value: 'Total Yield Value: ' + yieldPrice.toFixed(2) + ' $', 
-                  style: {fontSize: '13px', padding: '0px 50px'}
+                  value: '$ ' + yieldPrice.toFixed(2), 
+                  style: {}
                 });
-              resultsPanel.add(yieldPriceLabel);
+              
+              yieldPricePanel.add(yieldPriceLabelup);
+              yieldPricePanel.add(yieldPriceLabel);
+              resultsPanel.add(yieldPricePanel);
                 
                 });
                 
@@ -902,7 +1137,10 @@ var panel = ui.Panel({
       }
     }),
     
-    ui.Label('Select Year:'),
+    ui.Label('Select Year:', {
+      fontWeight: 'bold'
+    }),
+    
     ui.Select({
       items: ['Select...', '2018', '2019', '2020', 
                  '2021', '2022', '2023', '2024'],
@@ -916,7 +1154,9 @@ var panel = ui.Panel({
       }
     }),
     
-    ui.Label('Select Crop:'),
+    ui.Label('Select Crop:', {
+      fontWeight:'bold'
+    }),
     ui.Select({
       items: ['Select...', 'Soybean', 'Corn', 'Wheat'],
       value: 'Select...',
@@ -943,17 +1183,28 @@ var panel = ui.Panel({
     statsLabel_1,
     statsLabel_2
   ],
-  style: {position: 'top-right'}
 });
 
-Map.add(panel);
+ui.root.insert(0, panel);
 
 // Add a sub-panel to show calculation info
 var resultsPanel = ui.Panel({
+  widgets: [
+    ui.Label({
+      value:'Result : ',
+      style: {
+        fontWeight: 'bold',
+        fontSize: '18px',
+        textAlign: 'left'
+        
+      }})
+    
+    
+    ],
   layout: ui.Panel.Layout.Flow('vertical'),
   style: {width: '310px'} 
 });
-panel.add(resultsPanel);
+ui.root.insert(2, resultsPanel);
 
 // update new layers accoording to user's selection
 function updateMap() {
@@ -975,6 +1226,7 @@ function updateMap() {
 
     if (cropYieldLayer) {
       var layerName = selectedCrop + '_' + selectedYear;
+      
       Map.addLayer(cropYieldLayer, {}, 'YIELD_' + layerName);
     }
 
@@ -984,4 +1236,3 @@ function updateMap() {
   Map.addLayer(ndCounties, {}, 'ND Counties');
 }
 ```
-
