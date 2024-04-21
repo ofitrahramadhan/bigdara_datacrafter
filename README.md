@@ -10,8 +10,8 @@ Use this repository to host a website for your CASA0025 final project by followi
 Division of Group work: 
 1. Data collection: Zimeng Song, Burhan Ahmad Wani, Jiang Han;
 2. Modeling: Fitrah Ramadhan, Weixian Liang, Fanyi Li;
-3. Interface: Zimeng Song;
-4. Documentation: All members.
+3. Interface: Zimeng Song, Fitrah Ramadhan, Weixian Liang;
+4. Documentation: Burhan Ahmad Wani, All members.
 
 Your website should now be available under 
 https://{your_username}.github.io/{your_repo_name}
