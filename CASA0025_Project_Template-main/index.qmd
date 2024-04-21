@@ -88,7 +88,7 @@ We explored machine learning techniques to forecast crop yields, evaluating mode
 
 ### Validation
 
-To get the performance of our models, we can use the test data from the previous split. We used R square and Root Mean Squared Error (RMSE) to validate our models. There are some graphs showing these metrics: 
+To get the performance of our models, we can use the test data from the previous split. We used R square and Root Mean Squared Error (RMSE) to validate our models. Some graphs showing these metrics are below: 
 
 
 <div style="position: relative; width: 100%; height: 0; padding-top: 56.2500%;
