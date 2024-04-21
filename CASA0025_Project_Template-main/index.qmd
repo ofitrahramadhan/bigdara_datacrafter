@@ -253,7 +253,285 @@ for year in range(2000, 2024):
 
 ### Methodology Code:
 
-- Considering the impact of environmental factors on crop growth within designated time constraints, our project initially explored nine parameters from the GEE database. We employed a Random Forest model to perform importance testing on these parameters for each specific crop type. Based on the results of this testing, we selected five or six key variables per crop to serve as independent variables in our predictive models. The variables in Table-1 were chosen due to their direct influence on plant growth and yield across various crops like wheat, soybeans, and corn over the period from 2015 to 2023.
+- First, we experimented with various machine learning methods in Python, including Linear Regression (LR), Random Forest Regressor (RF), Gradient Boosting Regressor (XGB), and Artificial Neural Network (ANN). By comparing their R2 and RMSE scores, we identified the most suitable method for each of the three crops.
+- Considering the impact of environmental factors on crop growth within a specified time frame, we initially explored all nine parameters. Subsequently, based on the importance tests from the Random Forest model, five to six key variables were selected as independent variables in the predictive models for each crop.
+- In GEE, we trained Random Forest (RF) predictive models separately for three types of crops using data from six years, spanning 2018 to 2023, and split them into training/validation datasets. After obtaining the models, we assessed their performance using R2 and RMSE.
+- Using the historical average method to make a simple prediction for the crop yield of the coming year.
+
+```python
+#install packages
+!pip install tensorflow
+
+#load packages
+
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+
+#packages for manipulating dataframe
+import numpy as np
+import pandas as pd
+import geopandas as gpd
+from shapely.geometry import Point
+import sklearn
+
+#packages for machine learning
+##train-test-split
+from sklearn.model_selection import train_test_split, GridSearchCV, validation_curve
+
+##method 1: Linear Regression (LR)
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.model_selection import cross_val_score
+
+##method 2: Random Forest Regressor (RF)
+import rfpimp
+from sklearn.ensemble import RandomForestRegressor
+
+##method 3: Gradient Boosting Regressor (XGB)
+import xgboost
+from xgboost import XGBRegressor
+
+##method 4: Artificial Neural Network (ANN)
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
+
+##cross validation
+
+##evaluation metrics (R2 and RMSE)
+from sklearn.metrics import r2_score, mean_squared_error
+
+#data visualization
+import matplotlib.pyplot as plt
+
+pd.set_option('display.max_rows', 300) # specifies number of rows to show
+pd.options.display.float_format = '{:40,.4f}'.format # specifies default number format to 4 decimal places
+plt.style.use('ggplot') # specifies that graphs should use ggplot styling
+%matplotlib inline
+
+# 1. Load & Cleaning Data
+#load data
+soybean_2018 = pd.read_csv('https://www.dropbox.com/scl/fi/ixibqk9pyuehwvoz7mr1h/2018_County_Summary_Merged.csv?rlkey=wueodqdvzsht5or4eftwdd3ys&dl=1')
+soybean_2019 = pd.read_csv('https://www.dropbox.com/scl/fi/x3oiqrikr0xagqrh5tiqu/2019_County_Summary_Merged.csv?rlkey=zr5wru8sg5iybp43lnjf7ls5a&dl=1')
+soybean_2020 = pd.read_csv('https://www.dropbox.com/scl/fi/m4r74ydgw3yno93nakagl/2020_County_Summary_Merged.csv?rlkey=kmd8bozo9z9jxznoa775gg33z&dl=1')
+soybean_2021 = pd.read_csv('https://www.dropbox.com/scl/fi/2vmvsyjloz9hvzejtdez4/2021_County_Summary_Merged.csv?rlkey=ossgr4x3fvzgebhqprchntt2f&dl=1')
+soybean_2022 = pd.read_csv('https://www.dropbox.com/scl/fi/x61224yvwtq4idnqphwjy/2022_County_Summary_Merged.csv?rlkey=s3zm9ooap8pjqom3jr0aklc6t&dl=1')
+soybean_2023 = pd.read_csv('https://www.dropbox.com/scl/fi/zrjnmeqysrokfsua24hb3/2023_County_Summary_Merged.csv?rlkey=jb4w1pt295zeagbvgm7c2t7pk&dl=1')
+
+soybean_list = [soybean_2018, soybean_2019, soybean_2020, soybean_2021, soybean_2022, soybean_2023]
+soybean_df = pd.concat(soybean_list)
+soybean_df = soybean_df.drop(['NAME','GEOID','SMS_PM','SMS_AM','SAR'], axis=1)
+soybean_df.info()
+
+# 2.1 Train & Test Data Split
+#split the dataset
+X = soybean_df.drop('YIELD', axis=1)
+y = soybean_df['YIELD']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=100)
+
+# 2.2 Train & Test Data Standarderlized
+def standardize_columns(file_name, columns_to_standardize):
+    scaler = StandardScaler()
+
+    df = file_name
+    df[columns_to_standardize] = scaler.fit_transform(df[columns_to_standardize])
+    return df
+
+def standardize_series(series):
+    scaler = StandardScaler()
+    series = scaler.fit_transform(series.values.reshape(-1, 1)).flatten()
+    return series
+    
+X_columns = ['LST_DAY','PA','NDVI','ET','LST_NIGHT','PAR']
+y_columns = ['YIELD']
+
+X_train = standardize_columns(X_train, X_columns)
+X_test = standardize_columns(X_test, X_columns)
+
+# 3. Model Training and Parameter Tuning
+# 3.1. Linear Regression (LR)
+model_lr = LinearRegression()
+
+# Cross validation
+scores = cross_val_score(model_lr, X, y, cv=5, scoring='neg_mean_squared_error')
+
+mean_mse = np.mean(scores)
+std_mse = np.std(scores)
+
+print(f'Mean MSE: {mean_mse}')
+print(f'Standard Deviation of MSE: {std_mse}')
+model_lr.fit(X_train, y_train)
+
+# 3.2. Random Forest Regressor (RF)
+# values of max_depth and min_samples_split
+hyperparameters = {'max_depth':[3,5,10,20,30], 'min_samples_split':[2,4,6,8,10]}
+
+
+randomState_dt = 10000
+model_rf = RandomForestRegressor(random_state=randomState_dt)
+
+# cv=5 by default, which means 5-fold cross-validation
+clf = GridSearchCV(model_rf, hyperparameters)
+
+clf.fit(X_train, y_train)
+
+# we can query the best parameter value and its accuracy score
+print ("The best parameter value is: ")
+print (clf.best_params_)
+print ("The best score is: ")
+print (clf.best_score_)
+
+# Train the final RF
+rf_final = RandomForestRegressor(max_depth=clf.best_params_['max_depth'], min_samples_split=clf.best_params_['min_samples_split'], random_state=randomState_dt)
+rf_final.fit(X_train, y_train)
+
+# 3.3. Gradient Boosting Regressor (XGB)
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+# values of max_depth and min_samples_split
+hyperparameters = {'max_depth':[2,4,6,8,10], 'n_estimators':[4,8,12,16,20]}
+
+randomState_xgb = 125
+xgb = XGBRegressor(random_state=randomState_xgb)
+
+# cv=5 by default, which means 5-fold cross-validation
+gscv_xgb = GridSearchCV(xgb, hyperparameters)
+
+gscv_xgb.fit(X_train, y_train)
+
+# we can query the best parameter value and its accuracy score
+print ("The best parameter value is: ")
+print (gscv_xgb.best_params_)
+print ("The best score is: ")
+print (gscv_xgb.best_score_)
+
+# 3.4. Artificial Neural Network (ANN)
+model_ann = keras.Sequential([
+    layers.Input(shape=(6,)),  # Input layer
+    layers.Dense(128, activation='relu'),  # Hidden layer with ReLU activation
+    layers.Dropout(0.5),  # Dropout layer for regularization
+    layers.Dense(64, activation='relu'),  # Additional hidden layer
+    layers.Dropout(0.3),  # Another dropout layer
+    layers.Dense(1)  # Output layer
+])
+
+#measuring the training with certain metrics
+model_ann.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+
+#train the model
+model_ann.fit(X_train, y_train, epochs=100, validation_data=(X_test, y_test))
+
+# 4. Model Evaluation and Performance Comparison
+# 4.1. E. Linear Regression (LR)
+train_predictions = model_lr.predict(X_train)
+test_predictions = model_lr.predict(X_test)
+
+r2_train_lr = r2_score(y_train, train_predictions)
+r2_test_lr = r2_score(y_test, test_predictions)
+
+rmse_train_lr = mean_squared_error(y_train, train_predictions, squared=False)
+rmse_test_lr = mean_squared_error(y_test, test_predictions, squared=False)
+
+print(f"Training R^2: {r2_train_lr:.4f}")
+print(f"Test R^2: {r2_test_lr:.4f}")
+print(f"Training RMSE: {rmse_train_lr:.4f}")
+print(f"Test RMSE: {rmse_test_lr:.4f}")
+
+# 4.2. E. Random Forest Regressor (RF)
+r2_train_rf = rf_final.score(X=X_train, y=y_train)
+r2_test_rf = rf_final.score(X=X_test, y=y_test)
+
+print("R2 on the training data:")
+print(r2_train_rf)
+print("R2 on the testing data:")
+print(r2_test_rf)
+
+rmse_train_rf = mean_squared_error(y_train, rf_final.predict(X_train), squared=False)
+rmse_test_rf = mean_squared_error(y_test, rf_final.predict(X_test), squared=False)
+
+print("RMSE on the training data:")
+print(rmse_train_rf)
+print("RMSE on the testing data:")
+print(rmse_test_rf)
+
+# Calculate and plot the feature importance of the RF model
+imp = rfpimp.importances(rf_final, X_test, y_test)
+print(imp)
+viz = rfpimp.plot_importances(imp)
+viz.view()
+
+# 4.3. E. Gradient Boosting Regressor (XGB)
+model_xgb = XGBRegressor(max_depth=gscv_xgb.best_params_['max_depth'], n_estimators=gscv_xgb.best_params_['n_estimators'], random_state=randomState_xgb)
+model_xgb.fit(X_train, y_train)
+
+# r2_train_xgb, r2_test_xgb, rmse_train_xgb, rmse_test_xgb
+r2_train_xgb = model_xgb.score(X=X_train, y=y_train)
+r2_test_xgb = model_xgb.score(X=X_test, y=y_test)
+rmse_train_xgb = mean_squared_error(y_train, model_xgb.predict(X_train), squared=False)
+rmse_test_xgb = mean_squared_error(y_test, model_xgb.predict(X_test), squared=False)
+
+print("R2 on the training data:")
+print(r2_train_xgb)
+print("R2 on the testing data:")
+print(r2_test_xgb)
+
+print("RMSE on the training data:")
+print(rmse_train_xgb)
+print("RMSE on the testing data:")
+print(rmse_test_xgb)
+
+imp_xgb = rfpimp.importances(model_xgb, X_test, y_test) # permutation
+print(imp_xgb)
+viz_xgb = rfpimp.plot_importances(imp_xgb)
+viz_xgb.view()
+
+# 4.4. E. Artificial Neural Network (ANN)
+#predictions
+y_pred_train_ann = model_ann.predict(X_train).flatten()
+y_pred_test_ann = model_ann.predict(X_test).flatten()
+
+#Compute R2 and RMSE
+r2_train_ann = np.round(r2_score(y_train, y_pred_train_ann),2)
+r2_test_ann = np.round(r2_score(y_test, y_pred_test_ann),2)
+rmse_train_ann = np.round(np.sqrt(mean_squared_error(y_train, y_pred_train_ann)),2)
+rmse_test_ann = np.round(np.sqrt(mean_squared_error(y_test, y_pred_test_ann)),2)
+
+#print the result
+print("Train R2:", r2_train_ann)
+print("Test R2:", r2_test_ann)
+print("Train RMSE:", rmse_train_ann)
+print("Test RMSE:", rmse_test_ann)
+
+#crosscheck the y value between real and predicted
+crosscheck_y_dict = {
+    'y_test' : y_test,
+    'y_pred' : np.round(y_pred_test_ann,0),
+    'delta' : np.abs(np.round((y_test - y_pred_test_ann),0))
+}
+
+#plotting histogram
+crosscheck_y_df = pd.DataFrame(crosscheck_y_dict)
+plt.hist(crosscheck_y_df['delta'], bins=10)
+plt.xlabel(f'Delta\nR2_test = {r2_test_ann}, RMSE_test = {rmse_test_ann}, delta_max = {crosscheck_y_df.delta.max()}')
+plt.ylabel('Frequency (Number of Data)')
+plt.title(f"Accuracy of ANN Model Based on Delta of Y Test and Y Pred)")
+plt.show()
+
+# 4.5. Model Performance Comparison
+#please input your metrics in here
+metrics_dict = {
+    'metrics': ["Train R2","Test R2","Train RMSE","Test RMSE"],
+    'LR': [r2_train_lr, r2_test_lr, rmse_train_lr, rmse_test_lr],
+    'RF': [r2_train_rf, r2_test_rf, rmse_train_rf, rmse_test_rf],
+    'XGB': [r2_train_xgb, r2_test_xgb, rmse_train_xgb, rmse_test_xgb],
+    'ANN': [r2_train_ann, r2_test_ann, rmse_train_ann, rmse_test_ann]
+}
+
+#create dataframe
+metrics_df = pd.DataFrame(metrics_dict)
+metrics_df.set_index('metrics')
+```
 
 ### Interface Code:
 
@@ -707,284 +985,3 @@ function updateMap() {
   Map.addLayer(ndCounties, {}, 'ND Counties');
 }
 ```
-
-- First, we experimented with various machine learning methods in Python, including Linear Regression (LR), Random Forest Regressor (RF), Gradient Boosting Regressor (XGB), and Artificial Neural Network (ANN). By comparing their R2 and RMSE scores, we identified the most suitable method for each of the three crops.
-- Considering the impact of environmental factors on crop growth within a specified time frame, we initially explored all nine parameters. Subsequently, based on the importance tests from the Random Forest model, five to six key variables were selected as independent variables in the predictive models for each crop.
-- In GEE, we trained Random Forest (RF) predictive models separately for three types of crops using data from six years, spanning 2018 to 2023, and split them into training/validation datasets. After obtaining the models, we assessed their performance using R2 and RMSE.
-- Using the historical average method to make a simple prediction for the crop yield of the coming year.
-
-```python
-#install packages
-!pip install tensorflow
-
-#load packages
-
-import pandas as pd
-from sklearn.preprocessing import StandardScaler
-
-#packages for manipulating dataframe
-import numpy as np
-import pandas as pd
-import geopandas as gpd
-from shapely.geometry import Point
-import sklearn
-
-#packages for machine learning
-##train-test-split
-from sklearn.model_selection import train_test_split, GridSearchCV, validation_curve
-
-##method 1: Linear Regression (LR)
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.model_selection import cross_val_score
-
-##method 2: Random Forest Regressor (RF)
-import rfpimp
-from sklearn.ensemble import RandomForestRegressor
-
-##method 3: Gradient Boosting Regressor (XGB)
-import xgboost
-from xgboost import XGBRegressor
-
-##method 4: Artificial Neural Network (ANN)
-import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers
-
-##cross validation
-
-##evaluation metrics (R2 and RMSE)
-from sklearn.metrics import r2_score, mean_squared_error
-
-#data visualization
-import matplotlib.pyplot as plt
-
-pd.set_option('display.max_rows', 300) # specifies number of rows to show
-pd.options.display.float_format = '{:40,.4f}'.format # specifies default number format to 4 decimal places
-plt.style.use('ggplot') # specifies that graphs should use ggplot styling
-%matplotlib inline
-
-# 1. Load & Cleaning Data
-#load data
-soybean_2018 = pd.read_csv('https://www.dropbox.com/scl/fi/ixibqk9pyuehwvoz7mr1h/2018_County_Summary_Merged.csv?rlkey=wueodqdvzsht5or4eftwdd3ys&dl=1')
-soybean_2019 = pd.read_csv('https://www.dropbox.com/scl/fi/x3oiqrikr0xagqrh5tiqu/2019_County_Summary_Merged.csv?rlkey=zr5wru8sg5iybp43lnjf7ls5a&dl=1')
-soybean_2020 = pd.read_csv('https://www.dropbox.com/scl/fi/m4r74ydgw3yno93nakagl/2020_County_Summary_Merged.csv?rlkey=kmd8bozo9z9jxznoa775gg33z&dl=1')
-soybean_2021 = pd.read_csv('https://www.dropbox.com/scl/fi/2vmvsyjloz9hvzejtdez4/2021_County_Summary_Merged.csv?rlkey=ossgr4x3fvzgebhqprchntt2f&dl=1')
-soybean_2022 = pd.read_csv('https://www.dropbox.com/scl/fi/x61224yvwtq4idnqphwjy/2022_County_Summary_Merged.csv?rlkey=s3zm9ooap8pjqom3jr0aklc6t&dl=1')
-soybean_2023 = pd.read_csv('https://www.dropbox.com/scl/fi/zrjnmeqysrokfsua24hb3/2023_County_Summary_Merged.csv?rlkey=jb4w1pt295zeagbvgm7c2t7pk&dl=1')
-
-soybean_list = [soybean_2018, soybean_2019, soybean_2020, soybean_2021, soybean_2022, soybean_2023]
-soybean_df = pd.concat(soybean_list)
-soybean_df = soybean_df.drop(['NAME','GEOID','SMS_PM','SMS_AM','SAR'], axis=1)
-soybean_df.info()
-
-# 2.1 Train & Test Data Split
-#split the dataset
-X = soybean_df.drop('YIELD', axis=1)
-y = soybean_df['YIELD']
-
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=100)
-
-# 2.2 Train & Test Data Standarderlized
-def standardize_columns(file_name, columns_to_standardize):
-    scaler = StandardScaler()
-
-    df = file_name
-    df[columns_to_standardize] = scaler.fit_transform(df[columns_to_standardize])
-    return df
-
-def standardize_series(series):
-    scaler = StandardScaler()
-    series = scaler.fit_transform(series.values.reshape(-1, 1)).flatten()
-    return series
-    
-X_columns = ['LST_DAY','PA','NDVI','ET','LST_NIGHT','PAR']
-y_columns = ['YIELD']
-
-X_train = standardize_columns(X_train, X_columns)
-X_test = standardize_columns(X_test, X_columns)
-
-# 3. Model Training and Parameter Tuning
-# 3.1. Linear Regression (LR)
-model_lr = LinearRegression()
-
-# Cross validation
-scores = cross_val_score(model_lr, X, y, cv=5, scoring='neg_mean_squared_error')
-
-mean_mse = np.mean(scores)
-std_mse = np.std(scores)
-
-print(f'Mean MSE: {mean_mse}')
-print(f'Standard Deviation of MSE: {std_mse}')
-model_lr.fit(X_train, y_train)
-
-# 3.2. Random Forest Regressor (RF)
-# values of max_depth and min_samples_split
-hyperparameters = {'max_depth':[3,5,10,20,30], 'min_samples_split':[2,4,6,8,10]}
-
-
-randomState_dt = 10000
-model_rf = RandomForestRegressor(random_state=randomState_dt)
-
-# cv=5 by default, which means 5-fold cross-validation
-clf = GridSearchCV(model_rf, hyperparameters)
-
-clf.fit(X_train, y_train)
-
-# we can query the best parameter value and its accuracy score
-print ("The best parameter value is: ")
-print (clf.best_params_)
-print ("The best score is: ")
-print (clf.best_score_)
-
-# Train the final RF
-rf_final = RandomForestRegressor(max_depth=clf.best_params_['max_depth'], min_samples_split=clf.best_params_['min_samples_split'], random_state=randomState_dt)
-rf_final.fit(X_train, y_train)
-
-# 3.3. Gradient Boosting Regressor (XGB)
-import warnings
-warnings.simplefilter(action='ignore', category=FutureWarning)
-# values of max_depth and min_samples_split
-hyperparameters = {'max_depth':[2,4,6,8,10], 'n_estimators':[4,8,12,16,20]}
-
-randomState_xgb = 125
-xgb = XGBRegressor(random_state=randomState_xgb)
-
-# cv=5 by default, which means 5-fold cross-validation
-gscv_xgb = GridSearchCV(xgb, hyperparameters)
-
-gscv_xgb.fit(X_train, y_train)
-
-# we can query the best parameter value and its accuracy score
-print ("The best parameter value is: ")
-print (gscv_xgb.best_params_)
-print ("The best score is: ")
-print (gscv_xgb.best_score_)
-
-# 3.4. Artificial Neural Network (ANN)
-model_ann = keras.Sequential([
-    layers.Input(shape=(6,)),  # Input layer
-    layers.Dense(128, activation='relu'),  # Hidden layer with ReLU activation
-    layers.Dropout(0.5),  # Dropout layer for regularization
-    layers.Dense(64, activation='relu'),  # Additional hidden layer
-    layers.Dropout(0.3),  # Another dropout layer
-    layers.Dense(1)  # Output layer
-])
-
-#measuring the training with certain metrics
-model_ann.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
-
-#train the model
-model_ann.fit(X_train, y_train, epochs=100, validation_data=(X_test, y_test))
-
-# 4. Model Evaluation and Performance Comparison
-# 4.1. E. Linear Regression (LR)
-train_predictions = model_lr.predict(X_train)
-test_predictions = model_lr.predict(X_test)
-
-r2_train_lr = r2_score(y_train, train_predictions)
-r2_test_lr = r2_score(y_test, test_predictions)
-
-rmse_train_lr = mean_squared_error(y_train, train_predictions, squared=False)
-rmse_test_lr = mean_squared_error(y_test, test_predictions, squared=False)
-
-print(f"Training R^2: {r2_train_lr:.4f}")
-print(f"Test R^2: {r2_test_lr:.4f}")
-print(f"Training RMSE: {rmse_train_lr:.4f}")
-print(f"Test RMSE: {rmse_test_lr:.4f}")
-
-# 4.2. E. Random Forest Regressor (RF)
-r2_train_rf = rf_final.score(X=X_train, y=y_train)
-r2_test_rf = rf_final.score(X=X_test, y=y_test)
-
-print("R2 on the training data:")
-print(r2_train_rf)
-print("R2 on the testing data:")
-print(r2_test_rf)
-
-rmse_train_rf = mean_squared_error(y_train, rf_final.predict(X_train), squared=False)
-rmse_test_rf = mean_squared_error(y_test, rf_final.predict(X_test), squared=False)
-
-print("RMSE on the training data:")
-print(rmse_train_rf)
-print("RMSE on the testing data:")
-print(rmse_test_rf)
-
-# Calculate and plot the feature importance of the RF model
-imp = rfpimp.importances(rf_final, X_test, y_test)
-print(imp)
-viz = rfpimp.plot_importances(imp)
-viz.view()
-
-# 4.3. E. Gradient Boosting Regressor (XGB)
-model_xgb = XGBRegressor(max_depth=gscv_xgb.best_params_['max_depth'], n_estimators=gscv_xgb.best_params_['n_estimators'], random_state=randomState_xgb)
-model_xgb.fit(X_train, y_train)
-
-# r2_train_xgb, r2_test_xgb, rmse_train_xgb, rmse_test_xgb
-r2_train_xgb = model_xgb.score(X=X_train, y=y_train)
-r2_test_xgb = model_xgb.score(X=X_test, y=y_test)
-rmse_train_xgb = mean_squared_error(y_train, model_xgb.predict(X_train), squared=False)
-rmse_test_xgb = mean_squared_error(y_test, model_xgb.predict(X_test), squared=False)
-
-print("R2 on the training data:")
-print(r2_train_xgb)
-print("R2 on the testing data:")
-print(r2_test_xgb)
-
-print("RMSE on the training data:")
-print(rmse_train_xgb)
-print("RMSE on the testing data:")
-print(rmse_test_xgb)
-
-imp_xgb = rfpimp.importances(model_xgb, X_test, y_test) # permutation
-print(imp_xgb)
-viz_xgb = rfpimp.plot_importances(imp_xgb)
-viz_xgb.view()
-
-# 4.4. E. Artificial Neural Network (ANN)
-#predictions
-y_pred_train_ann = model_ann.predict(X_train).flatten()
-y_pred_test_ann = model_ann.predict(X_test).flatten()
-
-#Compute R2 and RMSE
-r2_train_ann = np.round(r2_score(y_train, y_pred_train_ann),2)
-r2_test_ann = np.round(r2_score(y_test, y_pred_test_ann),2)
-rmse_train_ann = np.round(np.sqrt(mean_squared_error(y_train, y_pred_train_ann)),2)
-rmse_test_ann = np.round(np.sqrt(mean_squared_error(y_test, y_pred_test_ann)),2)
-
-#print the result
-print("Train R2:", r2_train_ann)
-print("Test R2:", r2_test_ann)
-print("Train RMSE:", rmse_train_ann)
-print("Test RMSE:", rmse_test_ann)
-
-#crosscheck the y value between real and predicted
-crosscheck_y_dict = {
-    'y_test' : y_test,
-    'y_pred' : np.round(y_pred_test_ann,0),
-    'delta' : np.abs(np.round((y_test - y_pred_test_ann),0))
-}
-
-#plotting histogram
-crosscheck_y_df = pd.DataFrame(crosscheck_y_dict)
-plt.hist(crosscheck_y_df['delta'], bins=10)
-plt.xlabel(f'Delta\nR2_test = {r2_test_ann}, RMSE_test = {rmse_test_ann}, delta_max = {crosscheck_y_df.delta.max()}')
-plt.ylabel('Frequency (Number of Data)')
-plt.title(f"Accuracy of ANN Model Based on Delta of Y Test and Y Pred)")
-plt.show()
-
-# 4.5. Model Performance Comparison
-#please input your metrics in here
-metrics_dict = {
-    'metrics': ["Train R2","Test R2","Train RMSE","Test RMSE"],
-    'LR': [r2_train_lr, r2_test_lr, rmse_train_lr, rmse_test_lr],
-    'RF': [r2_train_rf, r2_test_rf, rmse_train_rf, rmse_test_rf],
-    'XGB': [r2_train_xgb, r2_test_xgb, rmse_train_xgb, rmse_test_xgb],
-    'ANN': [r2_train_ann, r2_test_ann, rmse_train_ann, rmse_test_ann]
-}
-
-#create dataframe
-metrics_df = pd.DataFrame(metrics_dict)
-metrics_df.set_index('metrics')
-```
-
