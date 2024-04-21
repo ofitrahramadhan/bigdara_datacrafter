@@ -897,32 +897,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(summedImage)</span>
 <span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-174"><a href="#cb3-174" aria-hidden="true" tabindex="-1"></a><span class="co">// Print the results</span></span>
-<span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="st">'sumImg:'</span><span class="op">,</span> summeImag <span class="co">// Show layers if user choose both selections</span></span>
-<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (selectedYear <span class="op">!==</span> <span class="st">'Select...'</span> <span class="op">&amp;&amp;</span> selectedCrop <span class="op">!==</span> <span class="st">'Select...'</span>) {</span>
-<span id="cb3-177"><a href="#cb3-177" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-178"><a href="#cb3-178" aria-hidden="true" tabindex="-1"></a>      cropYieldLayer <span class="op">=</span> cropLayers[selectedCrop][selectedYear]<span class="op">;</span></span>
-<span id="cb3-179"><a href="#cb3-179" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-180"><a href="#cb3-180" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (cropYieldLayer) {</span>
-<span id="cb3-181"><a href="#cb3-181" aria-hidden="true" tabindex="-1"></a>      <span class="kw">var</span> layerName <span class="op">=</span> selectedCrop <span class="op">+</span> <span class="st">'_'</span> <span class="op">+</span> selectedYear<span class="op">;</span></span>
-<span id="cb3-182"><a href="#cb3-182" aria-hidden="true" tabindex="-1"></a>      <span class="bu">Map</span><span class="op">.</span><span class="fu">addLayer</span>(cropYieldLayer<span class="op">,</span> {}<span class="op">,</span> <span class="st">'YIELD_'</span> <span class="op">+</span> layerName)<span class="op">;</span></span>
-<span id="cb3-183"><a href="#cb3-183" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb3-184"><a href="#cb3-184" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-185"><a href="#cb3-185" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb3-186"><a href="#cb3-186" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb3-187"><a href="#cb3-187" aria-hidden="true" tabindex="-1"></a>  <span class="co">// add the counties layer</span></span>
-<span id="cb3-188"><a href="#cb3-188" aria-hidden="true" tabindex="-1"></a>  <span class="bu">Map</span><span class="op">.</span><span class="fu">addLayer</span>(ndCounties<span class="op">,</span> {}<span class="op">,</span> <span class="st">'ND Counties'</span>)<span class="op">;</span></span>
-<span id="cb3-189"><a href="#cb3-189" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb3-190"><a href="#cb3-190" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb3-191"><a href="#cb3-191" aria-hidden="true" tabindex="-1"></a><span class="st">'_'</span> <span class="op">+</span> selectedYear<span class="op">;</span></span>
-<span id="cb3-192"><a href="#cb3-192" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb3-193"><a href="#cb3-193" aria-hidden="true" tabindex="-1"></a>      <span class="bu">Map</span><span class="op">.</span><span class="fu">addLayer</span>(cropYieldLayer<span class="op">,</span> {}<span class="op">,</span> <span class="st">'YIELD_'</span> <span class="op">+</span> layerName)<span class="op">;</span></span>
-<span id="cb3-194"><a href="#cb3-194" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb3-195"><a href="#cb3-195" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-196"><a href="#cb3-196" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb3-197"><a href="#cb3-197" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb3-198"><a href="#cb3-198" aria-hidden="true" tabindex="-1"></a>  <span class="co">// add the counties layer</span></span>
-<span id="cb3-199"><a href="#cb3-199" aria-hidden="true" tabindex="-1"></a>  <span class="bu">Map</span><span class="op">.</span><span class="fu">addLayer</span>(ndCounties<span class="op">,</span> {}<span class="op">,</span> <span class="st">'ND Counties'</span>)<span class="op">;</span></span>
-<span id="cb3-200"><a href="#cb3-200" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="st">'sumImg:'</span><span class="op">,</span> summedImage)<span class="op">;</span></span>
+<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a><span class="co">// Map.addLayer(summedImage,{}, 'TotalYield2024');</span></span>
+<span id="cb3-177"><a href="#cb3-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-178"><a href="#cb3-178" aria-hidden="true" tabindex="-1"></a><span class="kw">var</span> yield2024 <span class="op">=</span> summedImage<span class="op">.</span><span class="fu">divide</span>(<span class="dv">3</span>)<span class="op">;</span></span>
+<span id="cb3-179"><a href="#cb3-179" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="st">'yield2024:'</span><span class="op">,</span> yield2024)<span class="op">;</span></span>
+<span id="cb3-180"><a href="#cb3-180" aria-hidden="true" tabindex="-1"></a><span class="bu">Map</span><span class="op">.</span><span class="fu">addLayer</span>(yield2024<span class="op">,</span>{}<span class="op">,</span>&nbsp;<span class="st">'yield2024'</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 </section>
 <section id="interface-code" class="level3">

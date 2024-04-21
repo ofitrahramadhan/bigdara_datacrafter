@@ -711,32 +711,13 @@ var summedImage = mergeYield.reduce(ee.Reducer.sum());
 print(summedImage)
 
 // Print the results
-print('sumImg:', summeImag // Show layers if user choose both selections
-  if (selectedYear !== 'Select...' && selectedCrop !== 'Select...') {
-    
-      cropYieldLayer = cropLayers[selectedCrop][selectedYear];
+print('sumImg:', summedImage);
+// Map.addLayer(summedImage,{}, 'TotalYield2024');
 
-    if (cropYieldLayer) {
-      var layerName = selectedCrop + '_' + selectedYear;
-      Map.addLayer(cropYieldLayer, {}, 'YIELD_' + layerName);
-    }
+var yield2024 = summedImage.divide(3);
+print('yield2024:', yield2024);
+Map.addLayer(yield2024,{}, 'yield2024');
 
-  }
-  
-  // add the counties layer
-  Map.addLayer(ndCounties, {}, 'ND Counties');
-  
-}
-'_' + selectedYear;
-      
-      Map.addLayer(cropYieldLayer, {}, 'YIELD_' + layerName);
-    }
-
-  }
-  
-  // add the counties layer
-  Map.addLayer(ndCounties, {}, 'ND Counties');
-}
 ```
 
 ### Interface Code:
