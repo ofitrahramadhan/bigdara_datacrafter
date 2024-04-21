@@ -75,11 +75,17 @@ Previous studies showed that RF is an effective and universal machine learning m
 
 ### Building Random Forest Model:
 
-1. Prepare original CSV including the three types of crop among several X variables and Y variable (the crop yield)
-   
-2. Prepare training/validation data
+1. Prepare original CSV file
+    - including the three crops (corn, wheat, soybean) among several X variables and Y variable (the crop yield).
+    
+    ![](images/oriCSV.png)
+    
+2. Prepare training data(80%)/validation data(20%)
 
-3. Use the training data to train three different RF Models in GEE
+3. Use the training data to train three different Random Forest regression Models in GEE
+   
+    ![](images/YieldLegend.png)
+
 
 ### Validation
 
@@ -701,4 +707,3 @@ function updateMap() {
   Map.addLayer(ndCounties, {}, 'ND Counties');
 }
 ```
-
