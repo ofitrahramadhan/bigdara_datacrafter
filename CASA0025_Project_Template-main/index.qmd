@@ -16,7 +16,6 @@ jupyter:
 ![](Captnknure.JPG)
 
 ## **Project Summary**
-
 CROPINVEST - Crop Yield Estimator for the State of North Dakota, USA
 
 ## **Problem Statement**
@@ -71,7 +70,7 @@ In this regard, we create CROPINVEST, a GEE application that monitors the enviro
 
 ## **Methodology**
 
-Previous studies showed that RF is an effective and universal machine learning method for crop yield prediction on a regional and global scale with high accuracy and precision and ease of use (Jeong et al., 2016.; Prasad et al., 2021).
+We explored machine learning techniques to forecast crop yields, evaluating models like Linear Regression, Random Forest, Gradient Boosting, and Neural Networks based on their R2 and RMSE scores ,and found RF best fit for each crop. Previous studies showed that RF is an effective and universal machine-learning method for crop yield prediction on a regional and global scale with high accuracy, precision, and ease of use (Jeong et al., 2016.; Prasad et al., 2021).
 
 ### Building Random Forest Model:
 
@@ -80,9 +79,9 @@ Previous studies showed that RF is an effective and universal machine learning m
     
     ![](images/oriCSV.png)
     
-2. Prepare training data(80%)/validation data(20%)
+2. Prepare Training Data(80%) / Validation Data(20%)
 
-3. Use the training data to train three different Random Forest regression Models in GEE
+3. Use the Training data to train three different Random Forest Regression Models in GEE
    
     ![](images/YieldLegend.png)
 
@@ -985,3 +984,4 @@ function updateMap() {
   Map.addLayer(ndCounties, {}, 'ND Counties');
 }
 ```
+
