@@ -1,14 +1,11 @@
-# bigdata_datacrafter 
-# Big Data Group Work 2024
-# Crop Yield Estimation
+Use this repository to host a website for your CASA0025 final project by following these stpes: 
 
-Hi guys, this is repository for our project. Here are important dates for us:
-1. 23/03           : First meeting
-2. 23/03 - 29/03   : Data preparation and creating modeling template
-3. 27/03           : Booking group meeting
-4. 30/03           : 2nd meeting, debugging the result
-5. 30/03 - 05/04   : User interface + reporting
-6. 03/04           : Booking group meeting
-7. 06/04           : 3rd meeting, final revision & presentation exercise
-8. 07/04 - 21/04   : Emergency periods
-9. 22/04           : Application demo
+1. clone this repository 
+2. install [quarto](https://quarto.org/docs/download/) 
+3. edit the 'index.qmd' file with the contents of your project
+4. using terminal, navigate to the project directory and run "quarto render" 
+5. push the changes to your github repository 
+6. on github, navigate to Settings>Pages>Build and Deployment. Make sure that under "Source" it says "deploy from branch". Under "Branch", select "Main" in the first dropdown and "Docs" under the second drop down. Then press "Save" 
+
+Your website should now be available under 
+https://{your_username}.github.io/{your_repo_name}
