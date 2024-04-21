@@ -48,7 +48,7 @@ In this regard, we create CROPINVEST, a GEE application that monitors the enviro
 - **A6** - *GRIDMET: Gridded Surface Meteorological Dataset*: Meteorological data.
 - **A7** - *MCD18C2.061 Photosynthetically Active Radiation Daily 3 hour*: Solar Radiation Levels.
 - **A8** - *SPL3SMP_E.005 SMAP L3 Radiometer Global Daily 9km Soil Moisture*: Soil moisture.
-- **A9** - *Crop Yield Data**: Contains county-wise crop yield data.[USDA](https://quickstats.nass.usda.gov/)
+- **A9** - *Crop Yield Data*: Contains county-wise crop yield data.[USDA](https://quickstats.nass.usda.gov/)
 - **A10** - *Current Crop Price Data*: Uses current crop price data from [Financial Times](https://markets.ft.com/data/commodities)
 
 ### Data Variables Overview
@@ -256,6 +256,8 @@ for year in range(2000, 2024):
 - Considering the impact of environmental factors on crop growth within a specified time frame, we initially explored all nine parameters. Subsequently, based on the importance tests from the Random Forest model, five to six key variables were selected as independent variables in the predictive models for each crop.
 - In GEE, we trained Random Forest (RF) predictive models separately for three types of crops using data from six years, spanning 2018 to 2023, and split them into training/validation datasets. After obtaining the models, we assessed their performance using R2 and RMSE.
 - Using the historical average method to make a simple prediction for the crop yield of the coming year.
+
+#### Part 1:
 
 ```python
 #install packages
@@ -532,6 +534,211 @@ metrics_df = pd.DataFrame(metrics_dict)
 metrics_df.set_index('metrics')
 ```
 
+#### Part 2:
+
+```js
+
+//  ========================== GEE  ========================================
+// Import CSV data  
+// Load data from CSV file
+var csvFile = ee.FeatureCollection('projects/ee-ucfnfli/assets/corn_df');
+
+// ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10', 'B11', 'BQA']
+var bands = ['NDVI', 'LST_DAY', 'ET', 'PAR', 'PA'];
+
+
+//  ========================== train the RF classification model  ========================================
+// Split the training and testing data
+var withRandom = csvFile.randomColumn({
+  columnName:'random',
+  seed:2,
+  distribution: 'uniform',
+});
+
+
+var split = 0.8; 
+var trainingData = withRandom.filter(ee.Filter.lt('random', split));
+var validationData = withRandom.filter(ee.Filter.gte('random', split));
+
+
+// var classifier = ee.Classifier.smileRandomForest(100, null, 8, 0.5, null, 125)
+var classifier = ee.Classifier.smileRandomForest(100, null, 1, 0.7, null, 0).setOutputMode('REGRESSION')
+    .train({
+      features: trainingData, 
+      classProperty: 'YIELD', 
+      inputProperties: bands
+    });
+//print(classifier);
+
+// =================================== img  ======================
+
+var featureTest = trainingData.select(['NDVI', 'LST_DAY', 'ET', 'PAR', 'PA','YIELD']);
+
+var classifiedFeatures = featureTest.classify(classifier,'YIELDPredicted');
+
+
+// ============================ Validation  =================================
+// ============================ variable importance  =================================
+var dict = classifier.explain();
+print("Classifier information:", dict);
+var variableImportance = ee.Feature(null, ee.Dictionary(dict)
+  .get('importance'));
+// Make chart, print it
+var chart =
+  ui.Chart.feature.byProperty(variableImportance)
+  .setChartType('ColumnChart')
+  .setOptions({
+    title: 'Random Forest Variable Importance',
+    legend: {
+      position: 'none'
+    },
+    hAxis: {
+      title: 'Bands'
+    },
+    vAxis: {
+      title: 'Importance'
+    }
+  });
+print(chart);
+
+// ===================================  Compute RSME R2 =====================
+// Separate the observed (REDOX_CM) and predicted (regression) properties
+// var sampleTraining = predictedTraining.select(['Yield', 'predicted']);
+// Create chart, print it
+var chartTraining = ui.Chart.feature.byFeature({features:classifiedFeatures, xProperty:'YIELD', yProperties:['YIELDPredicted']})
+  .setChartType('ScatterChart')
+  .setOptions({
+    title: 'Predicted vs Observed - Training data ',
+    hAxis: {
+      'title': 'observed'
+    },
+    vAxis: {
+      'title': 'predicted'
+    },
+    pointSize: 3,
+    trendlines: {
+      0: {
+        showR2: true,
+        visibleInLegend: true
+      },
+      1: {
+        showR2: true,
+        visibleInLegend: true
+      }
+    }
+  });
+print(chartTraining);
+// Training data
+// R2 = 0.964;  RMSE = 6.601 in python
+// R2 = 0.948;  RMSE = 8.396 in GEE
+
+// Compute RSME
+// Get array of observation and prediction values 
+var observationTraining = ee.Array(classifiedFeatures.aggregate_array('YIELD'));
+var predictionTraining = ee.Array(classifiedFeatures.aggregate_array('YIELDPredicted'));
+//print('observationTraining', observationTraining)
+//print('predictionTraining', predictionTraining)
+
+// Compute residuals
+var residualsTraining = observationTraining.subtract(predictionTraining);
+//print('residualsTraining', residualsTraining)
+// Compute RMSE with equation, print it
+var rmseTraining = residualsTraining.pow(2)
+  .reduce('mean', [0])
+  .sqrt();
+print('Training RMSE', rmseTraining); 
+
+
+// =============================== Validation =================================
+
+var featureValidation = validationData.select(['NDVI', 'LST_DAY', 'ET', 'PAR', 'PA','YIELD']);
+//  Validation data 
+var classifiedValidation = featureValidation.classify(classifier,'YIELDPredicted');
+// print result
+//print('ValidRegressionResult:', classifiedValidation);
+
+var sampleValidation = classifiedValidation.select(['YIELD', 'YIELDPredicted']);
+// Create chart, print it
+var chartValidation = ui.Chart.feature.byFeature(sampleValidation, 'YIELD', 'YIELDPredicted')
+  .setChartType('ScatterChart')
+  .setOptions({
+    title: 'Predicted vs Observed - Validation data',
+    hAxis: {
+      'title': 'predicted'
+    },
+    vAxis: {
+      'title': 'observed'
+    },
+    pointSize: 3,
+    trendlines: {
+      0: {
+        showR2: true,
+        visibleInLegend: true
+      },
+      1: {
+        showR2: true,
+        visibleInLegend: true
+      }
+    }
+  });
+print(chartValidation);
+
+// Get array of observation and prediction values 
+var observationValidation = ee.Array(sampleValidation.aggregate_array('YIELD'));
+var predictionValidation = ee.Array(sampleValidation.aggregate_array('YIELDPredicted'));
+// Compute residuals
+var residualsValidation = observationValidation.subtract(predictionValidation);
+// Compute RMSE with equation, print it
+var rmseValidation = residualsValidation.pow(2)
+  .reduce('mean', [0])
+  .sqrt();
+print('Validation RMSE', rmseValidation);
+// Testing data
+// R2 = 0.812;  RMSE = 15.166 in python
+// R2 = 0.841;  RMSE = 12.990 in GEE
+// ============================== merge raster data ============================
+// Merge 
+var yield2021 = processYear(2021);
+var yield2022 = processYear(2022);
+var yield2023 = processYear(2023);
+// Concatenate two images into one multi-band image.
+var mergeYield = ee.Image.cat([yield2021, yield2022, yield2023]);
+print('mergeImg:', mergeYield);
+
+// Obtain the union of all images in the image collection and sum them
+// sum all three years yields
+var summedImage = mergeYield.reduce(ee.Reducer.sum());
+print(summedImage)
+
+// Print the results
+print('sumImg:', summeImag // Show layers if user choose both selections
+  if (selectedYear !== 'Select...' && selectedCrop !== 'Select...') {
+    
+      cropYieldLayer = cropLayers[selectedCrop][selectedYear];
+
+    if (cropYieldLayer) {
+      var layerName = selectedCrop + '_' + selectedYear;
+      Map.addLayer(cropYieldLayer, {}, 'YIELD_' + layerName);
+    }
+
+  }
+  
+  // add the counties layer
+  Map.addLayer(ndCounties, {}, 'ND Counties');
+  
+}
+'_' + selectedYear;
+      
+      Map.addLayer(cropYieldLayer, {}, 'YIELD_' + layerName);
+    }
+
+  }
+  
+  // add the counties layer
+  Map.addLayer(ndCounties, {}, 'ND Counties');
+}
+```
+
 ### Interface Code:
 
 - In this section, we perform calculations on the crop layers obtained from the random forest prediction model to generate various outputs. By defining global variables, we dynamically update the crop layers based on the user's selected year and crop type. The core functionality lies in the computation logic for the County level and Area level modes.
@@ -540,7 +747,9 @@ metrics_df.set_index('metrics')
 - The Interface Code is as follows :
 
 ```js
+
 // ——————————————————————————define crop layers————————————————————————————————
+
 var cropLayers = {
   Corn: {
     // Add layers of corn
@@ -670,39 +879,23 @@ var clearButton = ui.Button({
 
     resultsPanel.clear();
   },
-  style: {margin: '10px', position: 'bottom-center'}
+  style: {margin: '10px'}
 });
 
 
 // the main panel to select mode, year, croptype
 var panel = ui.Panel({
-  style: {position: 'middle-left',width: '20%',backgroundColor: 'white',padding: '10px'},
   widgets: [
     
     ui.Label('North Dakota Crop Yield', {
       fontWeight: 'bold',
       fontSize: '22px',
-      textAlign: 'left',
+      textAlign: 'center',
       stretch: 'horizontal'
       
     }),
     
-    ui.Label('Welcome to North Dakota Crop Yield Calculator. Please '+
-    'select mode, year, and type of crop you want to estimate and '+
-    'click or draw your area of interest on the map with the toolbox on top-left of the screen. '+
-    'the result would be appear on the right side of webpage.', {
-      fontSize: '12px',
-    }),
-    
-    ui.Label('----------------------------------------------  ', {
-      fontWeight: 'bold'
-    }),
-    
-    
-    
-    ui.Label('Select Mode:', {
-      fontWeight: 'bold',
-    }),
+    ui.Label('Select Mode:'),
     ui.Select({
       items: ['Select...','County Level', 'Area Level'],
       value: 'Select...',
@@ -715,8 +908,8 @@ var panel = ui.Panel({
           statsLabel_2.style().set('shown', false);
           
           // reset button
-          Map.remove(clearButton);
-          Map.add(clearButton);
+          panel.remove(clearButton);
+          panel.add(clearButton);
           
           // ban polygon drawing selection
           var drawingTools = Map.drawingTools();
@@ -750,73 +943,25 @@ var panel = ui.Panel({
             //print(averYield);
           
             // create labels
-            //var countyLabel = ui.Label({
-            //  value: 'County: ' + countyName,
-            //  style: {fontSize: '13px', padding: '0px 50px'}
-            //});
+            var countyLabel = ui.Label({
+              value: 'County: ' + countyName,
+              style: {fontSize: '13px', padding: '0px 50px'}
+            });
           
-            //____county label under construction
-            var Result = ui.Label({
-                value:'Result : ',
-                style: {
-                  fontWeight: 'bold',
-                  fontSize: '18px',
-                  textAlign: 'left'
-                }
-              });
-              
-              var line = ui.Label('----------------------------------------------  ', {
-                fontWeight: 'bold'})
-                
-              
-              resultsPanel.add(Result);
-              resultsPanel.add(line);
-            
-            
-            
-            var countyPanel = ui.Panel({
-                layout: ui.Panel.Layout.flow('horizontal')
-              });
-              
-              var countyLabelup = ui.Label({
-                value:'County    : ',
-                style: {fontWeight: 'bold'}
-              });
-              var countyLabel = ui.Label({
-                  value: countyName, 
-                  style: {}
-                });
-              
-              countyPanel.add(countyLabelup);
-              countyPanel.add(countyLabel);
-              resultsPanel.add(countyPanel);
-
-            
-            
-            //____county label under construction
-          
-          
-          
-            //var count_sumLabel = ui.Label({
-            //  value: 'Calculating...',
-            //  style: {fontSize: '13px', padding: '0px 50px'}
-            //});
+            var count_sumLabel = ui.Label({
+              value: 'Calculating...',
+              style: {fontSize: '13px', padding: '0px 50px'}
+            });
           
           // update labels by calculating
           // get the mean yield data
             averYield.evaluate(function(result) {
               var meanYield = result.mean;
-              
-             
-
-              
-              //___
-              
-              //var count_averYieldLabel = ui.Label({
-              //  value: 'Average Yield: ' + meanYield.toFixed(2) + ' BU/Acre', 
-              //  style: {fontSize: '13px', padding: '0px 50px'}
-              //});
-              //  resultsPanel.add(count_averYieldLabel);
+              var count_averYieldLabel = ui.Label({
+                value: 'Average Yield: ' + meanYield.toFixed(2) + ' BU/Acre', 
+                style: {fontSize: '13px', padding: '0px 50px'}
+              });
+                resultsPanel.add(count_averYieldLabel);
           });
           
             // calculate the area and total yield
@@ -824,100 +969,29 @@ var panel = ui.Panel({
 
               var areaInSqKm = (value / 1e6) * 900;
               var areaInAcres = areaInSqKm * 247.105;
-              //count_sumLabel.setValue('Crop Area: ' + areaInSqKm.toFixed(2) + 
-              //                        ' km² (' + areaInAcres.toFixed(2) + ' Acres)');
+              count_sumLabel.setValue('Crop Area: ' + areaInSqKm.toFixed(2) + 
+                                      ' km² (' + areaInAcres.toFixed(2) + ' Acres)');
                                       
-              //_____under construction: crop area
-              
-              var cropareaPanel = ui.Panel({
-                layout: ui.Panel.Layout.flow('horizontal')
-              });
-              
-              var cropareaLabelup = ui.Label({
-                value:'Crop Area : ',
-                style: {fontWeight: 'bold'}
-              });
-              var cropareaLabel = ui.Label({
-                  value: areaInSqKm.toFixed(2) + ' km² (' + areaInAcres.toFixed(2) + ' Acres)', 
-                  style: {}
-                });
-              
-              cropareaPanel.add(cropareaLabelup);
-              cropareaPanel.add(cropareaLabel);
-              resultsPanel.add(cropareaPanel);
-
-              
-              
-              //_____under construction: crop area
-              
-              
               averYield.evaluate(function(result) {
                 var meanYield = result.mean;
                 var totalYield = areaInAcres * meanYield;
-                
-                //___under construction
-                
-                var totalyieldPanel = ui.Panel({
-                layout: ui.Panel.Layout.flow('horizontal')
-              });
-              
-              var totalyieldLabelup = ui.Label({
-                value:'Total Yield : ',
-                style: {fontWeight: 'bold'}
-              });
-              var totalyieldLabel = ui.Label({
-                  value: totalYield.toFixed(2) + ' BU', 
-                  style: {}
+                var count_totalYieldLabel = ui.Label({
+                  value: 'Total Yield: ' + totalYield.toFixed(2) + ' BU', 
+                  style: {fontSize: '13px', padding: '0px 50px'}
                 });
-              
-             totalyieldPanel.add(totalyieldLabelup);
-              totalyieldPanel.add(totalyieldLabel);
-
-                
-                
-                //___under construction
                 var yieldPrice = totalYield * cropPrice;
-                
-                  //___under construction
-                
-                var totalyieldvaluePanel = ui.Panel({
-                layout: ui.Panel.Layout.flow('horizontal')
-              });
-              
-              var totalyieldvalueLabelup = ui.Label({
-                value:'Total Yield Value : ',
-                style: {fontWeight: 'bold'}
-              });
-              var totalyieldvalueLabel = ui.Label({
-                  value: '$ ' + yieldPrice.toFixed(2), 
-                  style: {}
+                var yieldPriceLabel = ui.Label({
+                  value: 'Total Yield Value: ' + yieldPrice.toFixed(2) + ' $', 
+                  style: {fontSize: '13px', padding: '0px 50px'}
                 });
-              
-             totalyieldvaluePanel.add(totalyieldvalueLabelup);
-              totalyieldvaluePanel.add(totalyieldvalueLabel);
-
-                
-                
-                //___under construction
-                
-                
-                //var count_totalYieldLabel = ui.Label({
-                //  value: 'Total Yield: ' + totalYield.toFixed(2) + ' BU', 
-                //  style: {fontSize: '13px', padding: '0px 50px'}
-                //});
-                
-                //var yieldPriceLabel = ui.Label({
-                //  value: 'Total Yield Value: ' + yieldPrice.toFixed(2) + ' $', 
-                //  style: {fontSize: '13px', padding: '0px 50px'}
-                //});
-                resultsPanel.add(totalyieldPanel);
-                resultsPanel.add(totalyieldvaluePanel);
+                resultsPanel.add(count_totalYieldLabel);
+                resultsPanel.add(yieldPriceLabel);
           });
             });
           
             // add the new label to sub-panel
-            //resultsPanel.add(countyLabel);
-            //resultsPanel.add(count_sumLabel);
+            resultsPanel.add(countyLabel);
+            resultsPanel.add(count_sumLabel);
           };
           
           Map.unlisten()
@@ -944,8 +1018,8 @@ var panel = ui.Panel({
           Map.unlisten()
           
           //reset button
-          Map.remove(clearButton);
-          Map.add(clearButton);
+          panel.remove(clearButton);
+          panel.add(clearButton);
           
           // draw polygon
           var drawingTools = Map.drawingTools();
@@ -1004,126 +1078,26 @@ var panel = ui.Panel({
                 style:{fontSize: '14px', padding: '0px 50px'}
               });
           
-              //resultsPanel.add(area_sumLabel);
-              //resultsPanel.add(meanYield_sumLabel);
-              //resultsPanel.add(totalYieldPanel);
+              resultsPanel.add(area_sumLabel);
+              resultsPanel.add(meanYield_sumLabel);
+              resultsPanel.add(count_totalYieldLabel);
           
-              //__
-              
-              var Result = ui.Label({
-                value:'Result : ',
-                style: {
-                  fontWeight: 'bold',
-                  fontSize: '18px',
-                  textAlign: 'left'
-                }
-              });
-              
-              var line = ui.Label('----------------------------------------------  ', {
-                fontWeight: 'bold'})
-                
-              
-              resultsPanel.add(Result);
-              resultsPanel.add(line);
-              
-              //__
-              
-              
-              //___
-              
-              var meanYieldPanel = ui.Panel({
-                layout: ui.Panel.Layout.flow('horizontal')
-              });
-              
-              var meanYieldLabelup = ui.Label({
-                value:'Average Yield : ',
-                style: {fontWeight: 'bold'}
-              });
-              var meanYieldLabel = ui.Label({
-                  value: values.meanYield.toFixed(2) + ' BU/Acre', 
-                  style: {}
-                });
-              
-              meanYieldPanel.add(meanYieldLabelup);
-              meanYieldPanel.add(meanYieldLabel);
-              resultsPanel.add(meanYieldPanel);
-              
-              
               meanYield_sumLabel.setValue('Average Yield: ' + values.meanYield.toFixed(2) + ' BU/Acre');
           
               var areaInSqKm = (values.pixelCount / 1e6) * 900;
               var areaInAcres = areaInSqKm * 247.105;
-              
-              
-              
-              //___areaaaa
-              
-              var areaPanel = ui.Panel({
-                layout: ui.Panel.Layout.flow('horizontal')
-              });
-              
-              var areaLabelup = ui.Label({
-                value:'Crop Area : ',
-                style: {fontWeight: 'bold'}
-              });
-              var areaLabel = ui.Label({
-                  value: areaInSqKm.toFixed(2) + ' km² / ' + areaInAcres.toFixed(2) + ' Acres', 
-                  style: {}
-                });
-              
-              areaPanel.add(areaLabelup);
-              areaPanel.add(areaLabel);
-              resultsPanel.add(areaPanel);
-
-              
-              
-              //___areaaaa
-              
-              //area_sumLabel.setValue('Crop Area: ' + areaInSqKm.toFixed(2) + 
-              //                        ' km² (' + areaInAcres.toFixed(2) + ' Acres)');
+              area_sumLabel.setValue('Crop Area: ' + areaInSqKm.toFixed(2) + 
+                                      ' km² (' + areaInAcres.toFixed(2) + ' Acres)');
                                       
-              var totalYield = areaInAcres * values.meanYield; //BU
-              
-              //_________
-              
-              var totalYieldPanel = ui.Panel({
-                layout: ui.Panel.Layout.flow('horizontal')
-              });
-              
-              var totalYieldLabelup = ui.Label({
-                value:'Total Yield : ',
-                style: {fontWeight: 'bold'}
-              });
-              var totalYieldLabel = ui.Label({
-                  value: totalYield.toFixed(2) + ' BU', 
-                  style: {}
-                });
-              
-              totalYieldPanel.add(totalYieldLabelup);
-              totalYieldPanel.add(totalYieldLabel);
-              resultsPanel.add(totalYieldPanel);
-              //_________
-              
-              //count_totalYieldLabel.setValue(totalYield.toFixed(2)); 
+              var totalYield = areaInAcres * values.meanYield;
+              count_totalYieldLabel.setValue('Total Yield: ' + totalYield.toFixed(2) + ' BU'); 
                
               var yieldPrice = totalYield * cropPrice;
-              
-              var yieldPricePanel = ui.Panel({
-                layout: ui.Panel.Layout.flow('horizontal')
-              });
-              
-              var yieldPriceLabelup = ui.Label({
-                value:'Total Yield Value : ',
-                style: {fontWeight: 'bold'}
-              });
               var yieldPriceLabel = ui.Label({
-                  value: '$ ' + yieldPrice.toFixed(2), 
-                  style: {}
+                  value: 'Total Yield Value: ' + yieldPrice.toFixed(2) + ' $', 
+                  style: {fontSize: '13px', padding: '0px 50px'}
                 });
-              
-              yieldPricePanel.add(yieldPriceLabelup);
-              yieldPricePanel.add(yieldPriceLabel);
-              resultsPanel.add(yieldPricePanel);
+              resultsPanel.add(yieldPriceLabel);
                 
                 });
                 
@@ -1137,10 +1111,7 @@ var panel = ui.Panel({
       }
     }),
     
-    ui.Label('Select Year:', {
-      fontWeight: 'bold'
-    }),
-    
+    ui.Label('Select Year:'),
     ui.Select({
       items: ['Select...', '2018', '2019', '2020', 
                  '2021', '2022', '2023', '2024'],
@@ -1154,9 +1125,7 @@ var panel = ui.Panel({
       }
     }),
     
-    ui.Label('Select Crop:', {
-      fontWeight:'bold'
-    }),
+    ui.Label('Select Crop:'),
     ui.Select({
       items: ['Select...', 'Soybean', 'Corn', 'Wheat'],
       value: 'Select...',
@@ -1183,28 +1152,17 @@ var panel = ui.Panel({
     statsLabel_1,
     statsLabel_2
   ],
+  style: {position: 'top-right'}
 });
 
-ui.root.insert(0, panel);
+Map.add(panel);
 
 // Add a sub-panel to show calculation info
 var resultsPanel = ui.Panel({
-  widgets: [
-    ui.Label({
-      value:'Result : ',
-      style: {
-        fontWeight: 'bold',
-        fontSize: '18px',
-        textAlign: 'left'
-        
-      }})
-    
-    
-    ],
   layout: ui.Panel.Layout.Flow('vertical'),
   style: {width: '310px'} 
 });
-ui.root.insert(2, resultsPanel);
+panel.add(resultsPanel);
 
 // update new layers accoording to user's selection
 function updateMap() {
@@ -1226,7 +1184,6 @@ function updateMap() {
 
     if (cropYieldLayer) {
       var layerName = selectedCrop + '_' + selectedYear;
-      
       Map.addLayer(cropYieldLayer, {}, 'YIELD_' + layerName);
     }
 
@@ -1234,5 +1191,6 @@ function updateMap() {
   
   // add the counties layer
   Map.addLayer(ndCounties, {}, 'ND Counties');
+  
 }
 ```

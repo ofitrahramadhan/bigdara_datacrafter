@@ -257,7 +257,7 @@ for year in range(2000, 2024):
 - In GEE, we trained Random Forest (RF) predictive models separately for three types of crops using data from six years, spanning 2018 to 2023, and split them into training/validation datasets. After obtaining the models, we assessed their performance using R2 and RMSE.
 - Using the historical average method to make a simple prediction for the crop yield of the coming year.
 
-#### Part 1:
+#### Part 1
 
 ```python
 #install packages
@@ -534,7 +534,7 @@ metrics_df = pd.DataFrame(metrics_dict)
 metrics_df.set_index('metrics')
 ```
 
-#### Part 2:
+#### Part 2
 
 ```js
 
@@ -711,33 +711,17 @@ var summedImage = mergeYield.reduce(ee.Reducer.sum());
 print(summedImage)
 
 // Print the results
-print('sumImg:', summeImag // Show layers if user choose both selections
-  if (selectedYear !== 'Select...' && selectedCrop !== 'Select...') {
-    
-      cropYieldLayer = cropLayers[selectedCrop][selectedYear];
+print('sumImg:', summemage);
+// Map.addLayer(summedImage,{}, 'TotalYield2024');
 
-    if (cropYieldLayer) {
-      var layerName = selectedCrop + '_' + selectedYear;
-      Map.addLayer(cropYieldLayer, {}, 'YIELD_' + layerName);
-    }
+var yield2024 = summedImage.divide(3);
+print('yield2024:', yield2024);
+Map.addLayer(yield2024,{}, 'yield2024');
 
-  }
-  
-  // add the counties layer
-  Map.addLayer(ndCounties, {}, 'ND Counties');
-  
-}
-'_' + selectedYear;
-      
-      Map.addLayer(cropYieldLayer, {}, 'YIELD_' + layerName);
-    }
 
-  }
-  
-  // add the counties layer
-  Map.addLayer(ndCounties, {}, 'ND Counties');
-}
+
 ```
+
 
 ### Interface Code:
 
@@ -1193,4 +1177,5 @@ function updateMap() {
   Map.addLayer(ndCounties, {}, 'ND Counties');
   
 }
+
 ```
